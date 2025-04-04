@@ -9,6 +9,8 @@ import {
   Grid 
 } from '@mui/material';
 import MainLayout from './layout/MainLayout';
+import StickHero from './StickHero';
+import './Home.scss';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -60,58 +62,20 @@ const Home: React.FC = () => {
               </Box>
             </Paper>
           </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: '16px' }}>
-              <Typography variant="h5" component="h2" gutterBottom color="primary">
-                Universidad
-              </Typography>
-              <Typography variant="body1" paragraph>
-                Accede a documentos universitarios organizados por facultades y carreras.
-              </Typography>
-              <Button 
-                variant="contained" 
-                fullWidth
-                onClick={() => navigate('/universidad')}
-              >
-                Explorar
-              </Button>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: '16px' }}>
-              <Typography variant="h5" component="h2" gutterBottom color="primary">
-                Grado Superior
-              </Typography>
-              <Typography variant="body1" paragraph>
-                Documentos para ciclos formativos de grado superior por especialidades.
-              </Typography>
-              <Button 
-                variant="contained" 
-                fullWidth
-                onClick={() => navigate('/grado-superior')}
-              >
-                Explorar
-              </Button>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: '16px' }}>
-              <Typography variant="h5" component="h2" gutterBottom color="primary">
-                Bachillerato
-              </Typography>
-              <Typography variant="body1" paragraph>
-                Material de estudio para todas las modalidades de bachillerato.
-              </Typography>
-              <Button 
-                variant="contained" 
-                fullWidth
-                onClick={() => navigate('/bachillerato')}
-              >
-                Explorar
-              </Button>
+          <Grid item xs={12} className="game-section">
+            <Paper 
+              elevation={3} 
+              sx={{ 
+                height: '300px',
+                width: '660px',
+                overflow: 'hidden',
+                borderRadius: '16px',
+                backgroundColor: '#f5f5f5',
+                border: '1px solid #ccc',
+                margin: '0 auto'
+              }}
+            >
+              <StickHero />
             </Paper>
           </Grid>
         </Grid>

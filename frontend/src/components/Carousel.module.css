@@ -1,0 +1,141 @@
+.carouselWrapper {
+  position: relative;
+  padding: 2rem 0;
+  width: 100%;
+  height: 100%;
+  --card-offset: 350px;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(100, 116, 139, 0.5);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator:hover {
+  background-color: rgba(59, 130, 246, 0.7);
+}
+
+.indicator.active {
+  background-color: #3b82f6;
+  transform: scale(1.2);
+}
+
+:global(.dark) .indicator {
+  background-color: rgba(148, 163, 184, 0.5);
+}
+
+:global(.dark) .indicator:hover {
+  background-color: rgba(79, 70, 229, 0.7);
+}
+
+:global(.dark) .indicator.active {
+  background-color: #4f46e5;
+}
+
+/* Mejora de la visibilidad en el tema oscuro */
+:global(.dark) .carouselWrapper [class*="react-spring-3d-carousel"] [class*="react-spring-3d-carousel__slide"] {
+  filter: brightness(1.1);
+}
+
+/* Estilos para las flechas de navegación */
+:global([class*="sc-bdnyFh"]),
+:global([class*="sc-gtsqUy"]),
+:global(.react-spring-3d-carousel__navigation-button) {
+  z-index: 10 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  color: #3b82f6 !important;
+}
+
+:global([class*="sc-bdnyFh"]:hover),
+:global([class*="sc-gtsqUy"]:hover),
+:global(.react-spring-3d-carousel__navigation-button:hover) {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  transform: scale(1.05) !important;
+}
+
+:global(.dark) :global([class*="sc-bdnyFh"]),
+:global(.dark) :global([class*="sc-gtsqUy"]),
+:global(.dark) :global(.react-spring-3d-carousel__navigation-button) {
+  background-color: rgba(31, 41, 55, 0.8) !important;
+  color: #818cf8 !important;
+}
+
+:global(.dark) :global([class*="sc-bdnyFh"]:hover),
+:global(.dark) :global([class*="sc-gtsqUy"]:hover),
+:global(.dark) :global(.react-spring-3d-carousel__navigation-button:hover) {
+  background-color: #4f46e5 !important;
+  color: white !important;
+}
+
+/* Ajustes para mejorar la visualización de las diapositivas */
+:global(.react-spring-3d-carousel__spring) {
+  width: 100%;
+  height: 100%;
+}
+
+/* Estilo adicional para los slides que no están en foco */
+:global(.slide) {
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+:global([class*="react-spring-3d-carousel__slide"]:not([class*="react-spring-3d-carousel__slide--active"])) :global(.slide) {
+  filter: brightness(0.8);
+  opacity: 0.85;
+}
+
+:global(.dark) :global([class*="react-spring-3d-carousel__slide"]:not([class*="react-spring-3d-carousel__slide--active"])) :global(.slide) {
+  filter: brightness(0.7);
+  opacity: 0.85;
+}
+
+/* Asegurarse de que los estilos del carrusel siempre se apliquen */
+:global(.dashboard-container) .carouselWrapper,
+:global(.dashboard-container) :global([class*="react-spring-3d-carousel"]),
+:global(.dashboard-container) :global([class*="react-spring-3d-carousel__slide"]) {
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+:global(.dark) :global(.dashboard-container) .carouselWrapper,
+:global(.dark) :global(.dashboard-container) :global([class*="react-spring-3d-carousel"]),
+:global(.dark) :global(.dashboard-container) :global([class*="react-spring-3d-carousel__slide"]) {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Reforzar los bordes en elementos react-spring */
+:global(.carousel-container-3d),
+:global(.carousel-container-3d) > div,
+:global([class*="react-spring-3d-carousel"]),
+:global([class*="react-spring-3d-carousel"] *) {
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+} 

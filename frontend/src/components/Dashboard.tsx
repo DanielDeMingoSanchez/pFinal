@@ -31,6 +31,9 @@ import StatCard from './ui/StatCard';
 import { useNavigate } from 'react-router-dom';
 import FloatingBackButton from './ui/FloatingBackButton';
 import { Box, Typography } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
+import Card from './Card';
+import Carousel from './Carousel';
 
 // Interfaces
 interface Documento {
@@ -774,8 +777,22 @@ const metadata = {
   };
 
   // Función para abrir un documento y actualizar las vistas
-  const abrirDocumento = async (documento: Documento) => {
+  const abrirDocumento = async (docOrId: Documento | string) => {
     try {
+      let documento: Documento | undefined;
+      
+      // Comprobar si el parámetro es un objeto o un ID
+      if (typeof docOrId === 'string') {
+        documento = documentos.find(doc => doc.id === docOrId);
+      } else {
+        documento = docOrId;
+      }
+      
+      if (!documento) {
+        toast.error('Documento no encontrado');
+        return;
+      }
+
       if (!documento.url) {
         toast.error('La URL del documento no está disponible');
         return;
@@ -786,7 +803,7 @@ const metadata = {
   
       await updateDoc(docRef, { vistas: nuevasVistas });
   
-      setDocumentos(prev => prev.map(d => d.id === documento.id ? { ...d, vistas: nuevasVistas } : d));
+      setDocumentos(prev => prev.map(d => d.id === documento?.id ? { ...d, vistas: nuevasVistas } : d));
   
       const urlVisualizacion = `${documento.url}?alt=media&response-content-disposition=inline`;
       window.open(urlVisualizacion, '_blank');
@@ -814,13 +831,27 @@ const EXTENSION_MAP: Record<string, string> = {
 };
 
 // Función robusta para descargar
-const descargarDocumento = async (documento: Documento) => {
-  if (!documento.url) {
-    toast.error('No se encontró la URL del archivo');
-    return;
-  }
-
+const descargarDocumento = async (docOrId: Documento | string) => {
   try {
+    let documento: Documento | undefined;
+    
+    // Comprobar si el parámetro es un objeto o un ID
+    if (typeof docOrId === 'string') {
+      documento = documentos.find(doc => doc.id === docOrId);
+    } else {
+      documento = docOrId;
+    }
+    
+    if (!documento) {
+      toast.error('Documento no encontrado');
+      return;
+    }
+
+    if (!documento.url) {
+      toast.error('No se encontró la URL del archivo');
+      return;
+    }
+
     const loadingToast = toast.loading('Descargando archivo...');
 
     const response = await fetch(documento.url);
@@ -859,6 +890,11 @@ const descargarDocumento = async (documento: Documento) => {
     await updateDoc(doc(db, 'documentos', documento.id), {
       descargas: (documento.descargas || 0) + 1
     });
+
+    // Actualizar el estado local para reflejar el incremento de descargas
+    setDocumentos(prevDocs => 
+      prevDocs.map(d => d.id === documento?.id ? { ...d, descargas: (d.descargas || 0) + 1 } : d)
+    );
 
     toast.dismiss(loadingToast);
     toast.success('Descarga completada');
@@ -945,7 +981,17 @@ const descargarDocumento = async (documento: Documento) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 centrado-principal">
+    <div
+    className="dashboard-container min-h-screen dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 centrado-principal"
+    style={{
+      border: 'none !important',
+      boxShadow: 'none !important',
+      backgroundColor: 'transparent !important',
+      outline: 'none !important',
+      margin: '0 !important',
+      padding: '0 !important'
+    }}
+  >
       {/* Eliminar el botón flotante individual, ya que ahora usamos uno global */}
       
       <motion.div 
@@ -953,6 +999,12 @@ const descargarDocumento = async (documento: Documento) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="container mx-auto px-4 py-6"
+        style={{ 
+          border: 'none !important', 
+          boxShadow: 'none !important', 
+          outline: 'none !important',
+          backgroundColor: 'transparent !important'
+        }}
       >
         {/* Barra de búsqueda mejorada */}
         <div className="flex justify-center items-center w-full">
@@ -1284,9 +1336,11 @@ const descargarDocumento = async (documento: Documento) => {
           animate="visible"
         >
           <div className="w-full flex justify-center mb-6">
-            <h2 className="text-2xl font-bold relative inline-block px-8 py-2" style={{
+            <h2 className="text-2xl font-bold mb-6 py-2 text-center text-gray-800 dark:text-white" style={{
               borderBottom: '2px solid #3b82f6',
               borderTop: '2px solid #3b82f6',
+              padding: '0.75rem 1rem',
+              display: 'inline-block',
               borderRadius: '4px',
               textAlign: 'center',
               textShadow: '1px 1px 3px rgba(0, 0, 0, 0.2)',
@@ -1298,87 +1352,33 @@ const descargarDocumento = async (documento: Documento) => {
           </div>
           
           {documentosRecientes && documentosRecientes.length > 0 ? (
-            <div className="carousel-container bg-white dark:bg-gray-800 shadow-lg rounded-lg w-full">
-              <div className="carousel-cards animate-scroll-infinite">
-                {/* Documentos originales */}
-                {documentosRecientes.map((doc) => (
-                  <div 
-                    key={doc.id} 
-                    className="carousel-card bg-gray-50 dark:bg-gray-700 shadow-md"
-                    onClick={() => abrirDocumento(doc)}
-                  >
-                    <div className="p-4 h-full flex flex-col">
-                      <div className="flex-grow">
-                        <h3 
-                          className="text-lg font-semibold text-gray-900 dark:text-white mb-2" 
-                          title={doc.titulo}
-                        >
-                          {doc.titulo.length > 25 ? doc.titulo.substring(0, 25) + '...' : doc.titulo}
-                        </h3>
-                        <p 
-                          className="text-sm text-gray-600 dark:text-gray-300 mb-4"
-                          title={doc.descripcion}
-                        >
-                          {doc.descripcion.length > 10 ? doc.descripcion.substring(0, 10) + '...' : doc.descripcion}
-                        </p>
-                      </div>
-                      <div className="flex justify-between items-center mt-2">
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {doc.fechaCreacion.substring(0, 10)}
-                        </div>
-                        <div className="flex space-x-2">
-                          <div className="flex items-center text-gray-500 dark:text-gray-400">
-                            <FaEye className="mr-1" size={12} /> <span className="text-xs">{doc.vistas}</span>
-                          </div>
-                          <div className="flex items-center text-gray-500 dark:text-gray-400">
-                            <FaDownload className="mr-1" size={12} /> <span className="text-xs">{doc.descargas}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                
-                {/* Duplicados para simular ciclo infinito */}
-                {documentosRecientes.slice(0, 5).map((doc) => (
-                  <div 
-                    key={`duplicate-${doc.id}`} 
-                    className="carousel-card bg-gray-50 dark:bg-gray-700 shadow-md"
-                    onClick={() => abrirDocumento(doc)}
-                  >
-                    <div className="p-4 h-full flex flex-col">
-                      <div className="flex-grow">
-                        <h3 
-                          className="text-lg font-semibold text-gray-900 dark:text-white mb-2" 
-                          title={doc.titulo}
-                        >
-                          {doc.titulo.length > 25 ? doc.titulo.substring(0, 25) + '...' : doc.titulo}
-                        </h3>
-                        <p 
-                          className="text-sm text-gray-600 dark:text-gray-300 mb-4"
-                          title={doc.descripcion}
-                        >
-                          {doc.descripcion.length > 10 ? doc.descripcion.substring(0, 10) + '...' : doc.descripcion}
-                        </p>
-                      </div>
-                      <div className="flex justify-between items-center mt-2">
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {doc.fechaCreacion.substring(0, 10)}
-                        </div>
-                        <div className="flex space-x-2">
-                          <div className="flex items-center text-gray-500 dark:text-gray-400">
-                            <FaEye className="mr-1" size={12} /> <span className="text-xs">{doc.vistas}</span>
-                          </div>
-                          <div className="flex items-center text-gray-500 dark:text-gray-400">
-                            <FaDownload className="mr-1" size={12} /> <span className="text-xs">{doc.descargas}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            <>
+              <div className="carousel-container-3d bg-transparent dark:bg-transparent shadow-lg rounded-lg w-full">
+                <Carousel
+                  cards={documentosRecientes.map(doc => ({
+                    key: uuidv4(),
+                    content: (
+                      <Card 
+                        documento={doc} 
+                        onVerClick={() => abrirDocumento(doc)} 
+                        onDescargarClick={() => descargarDocumento(doc)}
+                        
+                      />
+                    )
+                    
+                  }))}
+                  height="400px"
+                  width="100%"
+                  margin="0 auto"
+                  offset={2}
+                  
+                  showArrows={true}
+                />
+               
               </div>
-            </div>
+              
+            </>
+             
           ) : (
             <Box textAlign="center" my={6} p={4} bgcolor="rgba(255,255,255,0.8)" borderRadius={2}>
               <Typography variant="h6" mt={2} mb={1}>

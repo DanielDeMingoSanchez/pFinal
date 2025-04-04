@@ -1,0 +1,31 @@
+.btn {
+  background-color: #3b82f6;
+  color: #fff;
+  border: none;
+  outline: none;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  padding: 11px 1rem;
+  width: 7.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark .btn {
+  background-color: #4f46e5;
+}
+
+.dark .btn:hover {
+  background-color: #6366f1;
+} 

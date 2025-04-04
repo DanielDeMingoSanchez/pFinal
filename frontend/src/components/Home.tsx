@@ -38,7 +38,7 @@ const Home: React.FC = () => {
                 Documentos Compartidos
               </Typography>
               <Typography variant="h6" paragraph color="text.secondary">
-                Plataforma para compartir documentos educativos organizados por nivel académico
+                Plataforma para compartir documentos educativos organizados por nivel académico y dialogar con la comunidad educativa.
               </Typography>
               <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
                 <Button 

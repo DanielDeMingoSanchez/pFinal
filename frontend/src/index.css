@@ -2780,5 +2780,15 @@ body a:hover {
   opacity: 0.8;
 }
 
+/* Eliminar bordes de todos los botones y contenedores en la página documentos */
+body:has(div.dashboard-container) button:not(.carouselWrapper button):not([class*="react-spring-3d-carousel"] button),
+body:has(div.dashboard-container) div:not(.carouselWrapper):not([class*="react-spring-3d-carousel"]):not([class*="react-spring-3d-carousel"] div),
+body:has(div.dashboard-container) [class*="MuiPaper-root"],
+body:has(div.dashboard-container) [class*="MuiCard-root"] {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 
 

@@ -14,15 +14,11 @@ const StickHero: React.FC = () => {
     const initGame = () => {
       if (gameInitialized.current) return;
       gameInitialized.current = true;
-
+      
       // Ocultar el mensaje de inicio
-      if (startMessageRef.current && startMessageRef.current.parentNode === container) {
-        startMessageRef.current.style.opacity = '0';
-        setTimeout(() => {
-          if (startMessageRef.current && startMessageRef.current.parentNode === container) {
-            container.removeChild(startMessageRef.current);
-          }
-        }, 500); // Tiempo de transición para la opacidad
+      if (startMessageRef.current) {
+        startMessageRef.current.style.opacity = "0";
+        startMessageRef.current.style.visibility = "hidden";
       }
 
       // Extend the base functionality of JavaScript
@@ -603,14 +599,15 @@ const StickHero: React.FC = () => {
     const introElement = document.createElement('div');
     introElement.className = 'game-start-message';
     introElement.textContent = 'Haz clic para iniciar el juego';
-    container.appendChild(introElement);
     startMessageRef.current = introElement;
+    container.appendChild(introElement);
 
     return () => {
       container.removeEventListener('click', handleContainerClick);
       if (introElement.parentNode === container) {
         container.removeChild(introElement);
       }
+      startMessageRef.current = null;
     };
   }, []);
 

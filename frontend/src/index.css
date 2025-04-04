@@ -1,0 +1,2784 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importación de estilos para administrador */
+@import url('./admin-styles.css');
+
+:root {
+  /* Colores base al estilo Apple */
+  --primary: #0077ED;
+  --primary-dark: #0066CC;
+  --primary-light: #47A9FF;
+  
+  /* Colores de tema */
+  --background: #FBFBFD;
+  --text: #1D1D1F;
+  --text-secondary: #86868B;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-shadow: rgba(0, 0, 0, 0.06);
+  --button-shadow: rgba(0, 0, 0, 0.1);
+  --button-shadow-hover: rgba(0, 0, 0, 0.15);
+  
+  /* Gradientes sutiles al estilo Apple */
+  --button-gradient-start: #0077ED;
+  --button-gradient-end: #47A9FF;
+  --button-gradient-hover-start: #0066CC;
+  --button-gradient-hover-end: #0077ED;
+  
+  /* Opacidades */
+  --bg-opacity: 0.08;
+  --card-opacity: 0.95;
+  
+  /* Fuentes */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Tema oscuro al estilo Apple */
+html.dark {
+  --background: #000000;
+  --text: #FFFFFF;
+  --text-secondary: #E0E0E0;
+  --card-bg: rgba(15, 15, 15, 0.9);
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --button-shadow: rgba(255, 255, 255, 0.1);
+  --button-shadow-hover: rgba(255, 255, 255, 0.15);
+  --bg-opacity: 0.03;
+}
+
+/* Estilos base */
+body {
+  font-family: var(--font-family-base);
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  text-rendering: optimizeLegibility !important;
+  transition: all 0.3s ease;
+}
+
+/* Fondo con imagen y efecto de desenfoque */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.4), 
+    rgba(0, 0, 0, 0.3)
+  ), 
+  url('./resources/masanz.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--bg-opacity);
+  z-index: -1;
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out;
+  pointer-events: none;
+}
+
+/* Clases para controlar el desenfoque del fondo con transición más suave */
+body::before {
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+body.blur-background::before {
+  filter: blur(8px);
+  opacity: calc(var(--bg-opacity) + 0.1);
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+/* Asegurar que al cambiar de página no se mantenga el desenfoque */
+body:not(.blur-background)::before {
+  filter: none !important;
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+/* Eliminar desenfoque instantáneamente al navegar */
+a[href]:active ~ body.blur-background::before,
+a[href]:focus ~ body.blur-background::before,
+button[data-categoria]:active ~ body.blur-background::before,
+button[data-categoria]:focus ~ body.blur-background::before {
+  filter: none !important;
+  transition: filter 0s, opacity 0s;
+}
+
+/* Componentes MUI con estilo Apple */
+.MuiPaper-root,
+.MuiAppBar-root,
+.MuiDrawer-paper,
+.MuiCard-root {
+  background: var(--card-bg) !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Estilos para botones */
+button.bg-blue-600,
+.bg-blue-600,
+.btn-ver,
+.btn-descargar {
+  background: var(--primary) !important;
+  color: white !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 980px !important;
+  padding: 12px 22px !important;
+  font-weight: 400 !important;
+  font-size: 17px !important;
+  letter-spacing: -0.022em !important;
+  box-shadow: none !important;
+  border: none !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+button.bg-blue-600:hover,
+.bg-blue-600:hover,
+.btn-ver:hover,
+.btn-descargar:hover {
+  background: var(--primary-dark) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Estilos para los botones de acción */
+.btn-ver,
+.btn-descargar,
+.btn-borrar {
+  border-radius: 25px !important;
+  padding: 8px 20px !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  letter-spacing: 0.25px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 4px rgba(15, 108, 191, 0.15) !important;
+  min-width: 100px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.btn-ver:hover,
+.btn-descargar:hover,
+.btn-borrar:hover {
+  transform: translateY(-1px) scale(1.01) !important;
+  box-shadow: 0 4px 8px rgba(15, 108, 191, 0.2) !important;
+}
+
+.btn-ver:active,
+.btn-descargar:active,
+.btn-borrar:active {
+  transform: translateY(1px) !important;
+}
+
+/* Categorías con colores */
+.cat-universidad {
+  color: var(--primary-color);
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+.cat-grado-superior {
+  color: var(--secondary-color);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.cat-bachillerato {
+  color: var(--tertiary-color);
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.cat-profesional {
+  color: var(--professional-color);
+  background-color: rgba(236, 72, 153, 0.1);
+}
+
+.cat-otros {
+  color: var(--gray-color);
+  background-color: rgba(107, 114, 128, 0.1);
+}
+
+/* Estilos específicos para el Navbar */
+nav .flex-1 {
+  flex: 1 1 0% !important;
+}
+
+nav .justify-start {
+  justify-content: flex-start !important;
+}
+
+nav .justify-center {
+  justify-content: center !important;
+}
+
+nav .justify-end {
+  justify-content: flex-end !important;
+}
+
+nav .items-center {
+  align-items: center !important;
+}
+
+/* Asegurar que los iconos del navbar tengan el espacio correcto */
+nav .flex > div {
+  min-width: 24px;
+  display: flex !important;
+}
+
+/* Mejorar la visibilidad del menú desplegable en modo oscuro */
+.dark .absolute.bg-white {
+  background-color: #1f2937 !important;
+}
+
+/* Asegurar que el z-index del menú desplegable sea mayor que otros elementos */
+nav .absolute {
+  z-index: 100 !important;
+}
+
+/* Estilos para los botones e iconos */
+nav button, 
+nav a {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+}
+
+nav svg {
+  vertical-align: middle !important;
+}
+
+/* Ajustar el menú desplegable */
+nav .profile-menu-container {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Asegurar que el botón de cambio de tema funcione correctamente */
+nav button[aria-label*="modo"] {
+  cursor: pointer !important;
+  transition: transform 0.2s ease !important;
+}
+
+nav button[aria-label*="modo"]:hover {
+  transform: scale(1.1) !important;
+}
+
+/* Estilos para asegurar que el modo oscuro funcione correctamente */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 249, 250, 251;
+  --bg-opacity: 0.95;
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 17, 24, 39;
+  --bg-opacity: 0.85;
+}
+
+/* Estilo para el fondo con imagen */
+body {
+  color: rgb(var(--foreground-rgb));
+  background-color: rgba(var(--background-rgb), var(--bg-opacity));
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+}
+
+body::before {
+  
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('./resources/masanz.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: -1; /* ⬅️ ¡Aquí está el problema! */
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* ✅ Esto está bien */
+}
+
+
+
+/* 🔹 Asegurar que los íconos sean visibles */
+nav svg, button svg {
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5)); /* 🔥 Sombra para mejorar la visibilidad */
+}
+
+/* 🔹 Asegurar que los textos sean legibles en modo oscuro */
+.dark body::before {
+  opacity: 0.2;
+}
+
+.dark .card, .dark .container, .dark .bg-white, .dark .bg-gray-50, .dark main > div {
+  background-color: rgba(31, 41, 55, 0.85) !important;
+
+}
+
+/* 🔹 Asegurar que los botones de tema sean visibles */
+button[aria-label*="modo"] svg {
+  pointer-events: none !important;
+}
+
+/* 🔹 Forzar la aplicación del tema oscuro */
+html.dark {
+  color-scheme: dark !important;
+}
+
+/* 🔹 Asegurar que los elementos de la interfaz respeten el tema */
+.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+.dark .text-gray-900 {
+  color: #f9fafb !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+
+
+.dark body::before {
+  opacity: 0.1;
+}
+
+/* Contenedores con fondo semitransparente para mejorar legibilidad */
+.card, 
+.container, 
+.bg-white, 
+.bg-gray-50,
+main > div {
+  background-color: transparent !important;
+
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+}
+
+
+
+.dark .card, 
+.dark .container, 
+.dark .bg-white, 
+.dark .bg-gray-50,
+.dark main > div {
+  background-color: rgba(31, 41, 55, 0.85) !important;
+  
+}
+
+/* Asegurar que los botones de tema sean visibles */
+button[aria-label*="modo"] svg {
+  pointer-events: none !important;
+}
+
+/* Forzar la aplicación del tema oscuro */
+html.dark {
+  color-scheme: dark !important;
+}
+
+/* 🔹 Asegurar que los íconos sean visibles */
+nav svg, button svg {
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5)); /* 🔥 Sombra para mejorar la visibilidad */
+}
+/* Asegurar que los elementos de la interfaz respeten el tema */
+.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+.dark .text-gray-900 {
+  color: #f9fafb !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+/* Mejorar la transición entre temas */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.search-bar-container {
+  position: absolute;
+  top: 5.5rem; /* Ajusta según sea necesario */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%; /* Ajusta el tamaño según prefieras */
+  max-width: 600px; /* Límite para pantallas grandes */
+  z-index: 10; /* Para que esté por encima de otros elementos */
+}
+
+.search-bar-custom {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  font-size: 17px !important;
+  backdrop-filter: blur(20px) !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.search-bar-custom:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* Aplicar la fuente sans-serif a todo el documento con mayor especificidad */
+html, body, #root, #__next {
+  font-family: sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Asegurar que los inputs y botones también usen la fuente */
+input, button, textarea, select, h1, h2, h3, h4, h5, h6, p, span, a, div {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Mejorar la visibilidad de los textos */
+.dark-mode .MuiTypography-root,
+.dark-mode .MuiButton-root,
+.dark-mode .MuiIconButton-root {
+  color: var(--text) !important;
+}
+
+.dark-mode .MuiSvgIcon-root {
+  color: var(--text) !important;
+}
+
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
+  color: var(--text) !important;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+body:not(.dark-mode) .MuiTypography-root,
+body:not(.dark-mode) .MuiButton-root,
+body:not(.dark-mode) .MuiIconButton-root {
+  color: rgba(31, 41, 55, 0.95) !important; 
+}
+
+body:not(.dark-mode) .MuiSvgIcon-root {
+  color: rgba(31, 41, 55, 0.95) !important;
+}
+
+/* Excepciones para iconos en botones y otros elementos */
+.MuiButton-containedPrimary,
+.MuiButton-containedSecondary,
+.MuiButton-containedError,
+.MuiButton-containedSuccess,
+.MuiButton-containedWarning,
+.MuiButton-containedInfo,
+.dark-mode .MuiIconButton-colorPrimary,
+.dark-mode .MuiIconButton-colorSecondary,
+.dark-mode .MuiIconButton-colorError,
+.dark-mode .MuiIconButton-colorSuccess,
+.dark-mode .MuiIconButton-colorWarning,
+.dark-mode .MuiIconButton-colorInfo,
+.btn-primary,
+.btn-secondary,
+.btn-ver,
+.btn-descargar,
+.btn-borrar {
+  color: inherit !important;
+}
+
+.MuiButton-containedPrimary .MuiSvgIcon-root,
+.MuiButton-containedSecondary .MuiSvgIcon-root,
+.MuiButton-containedError .MuiSvgIcon-root,
+.MuiButton-containedSuccess .MuiSvgIcon-root,
+.MuiButton-containedWarning .MuiSvgIcon-root,
+.MuiButton-containedInfo .MuiSvgIcon-root,
+.dark-mode .MuiButton-containedPrimary .MuiSvgIcon-root,
+.dark-mode .MuiButton-containedSecondary .MuiSvgIcon-root,
+.dark-mode .MuiButton-containedError .MuiSvgIcon-root,
+.dark-mode .MuiButton-containedSuccess .MuiSvgIcon-root,
+.dark-mode .MuiButton-containedWarning .MuiSvgIcon-root,
+.dark-mode .MuiButton-containedInfo .MuiSvgIcon-root,
+.btn-primary .MuiSvgIcon-root,
+.btn-secondary .MuiSvgIcon-root,
+.btn-ver .MuiSvgIcon-root,
+.btn-descargar .MuiSvgIcon-root,
+.btn-borrar .MuiSvgIcon-root {
+  color: inherit !important;
+}
+
+/* Mejorar visibilidad de los textos con sombreado */
+.dark-mode .MuiAppBar-root .MuiToolbar-root .MuiTypography-root,
+.dark-mode .MuiAppBar-root .MuiToolbar-root .MuiSvgIcon-root {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+body:not(.dark-mode) .MuiAppBar-root .MuiToolbar-root .MuiTypography-root,
+body:not(.dark-mode) .MuiAppBar-root .MuiToolbar-root .MuiSvgIcon-root {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Asegurar que los textos en modo oscuro tengan buen contraste */
+.dark .btn-ver,
+.dark .btn-descargar,
+.dark .btn-borrar {
+  color: white !important; /* Forzar texto blanco en modo oscuro */
+}
+
+/* Asegurar que los botones tengan suficiente padding y sean fáciles de presionar en móviles */
+.btn-ver,
+.btn-descargar,
+.btn-borrar {
+  min-width: 90px;
+  font-weight: 500;
+}
+
+/* Mejorar accesibilidad para foco */
+.btn-ver:focus,
+.btn-descargar:focus,
+.btn-borrar:focus {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+/* Tipografía al estilo Apple */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.009em;
+}
+
+h1 {
+  font-size: 56px;
+  line-height: 1.07143;
+}
+
+h2 {
+  font-size: 48px;
+  line-height: 1.08349;
+}
+
+h3 {
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+p {
+  font-size: 17px;
+  line-height: 1.47059;
+  letter-spacing: -0.022em;
+}
+
+/* Efectos de hover suaves */
+a, button {
+  transition: color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease !important;
+}
+
+/* Scrollbar minimalista */
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animaciones suaves */
+.fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Centrado para grid de categorías */
+.grid {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Asegurar que los contenedores de categorías estén centrados */
+.flex.justify-center .grid {
+  display: grid;
+  margin: 0 auto;
+}
+
+/* Estilos específicos para el grid principal de botones de categoría */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 {
+  margin: 0 auto;
+  place-items: center;
+  justify-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Estilo específico para centrar la grid de categorías */
+#root .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  justify-content: center !important;
+}
+
+/* Centrar los elementos en la grid */
+#root .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button {
+  margin: 0 auto !important;
+  width: 100% !important;
+  max-width: 220px !important;
+}
+
+/* Centrado global para contenedores importantes */
+.container.mx-auto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100% !important;
+}
+
+/* Centrado general para cualquier grid */
+.grid {
+  display: grid !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Centrado específico para el contenedor principal */
+.centrado-principal .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 1.5rem !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  place-items: center !important;
+  justify-content: center !important;
+}
+
+/* Estilos para la tarjeta de documento */
+.carousel-container .bg-gray-50 {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.carousel-container .bg-gray-50:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Estilos para el carrusel, adaptados a todos los dispositivos */
+.carousel-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+  position: relative;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-cards {
+  display: flex;
+  gap: 1rem;
+}
+
+.carousel-card {
+  flex: 0 0 auto;
+  width: 300px;
+  min-height: 180px;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.carousel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-card:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 639px) {
+  .carousel-container {
+    padding: 0.75rem 0.5rem;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .carousel-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .carousel-cards {
+    gap: 0.5rem;
+  }
+  
+  .carousel-card {
+    width: 85% !important;
+    min-width: 200px !important;
+    max-width: 300px !important;
+    min-height: 150px !important;
+    scroll-snap-align: center;
+  }
+  
+  .carousel-card h3 {
+    font-size: 0.95rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.35rem !important;
+  }
+  
+  .carousel-card p {
+    font-size: 0.8rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.5rem !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Animación para el carrusel infinito */
+@keyframes scroll-infinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-infinite {
+  animation: scroll-infinite 30s linear infinite;
+}
+
+/* Estilos para botón subir documento */
+.flex.justify-center.w-full.mb-12 {
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.flex.justify-center.w-full.mb-12 button {
+  transform: translateY(0);
+}
+
+/* Ajuste para grid de categorías */
+.flex.justify-center.mx-auto.px-4.w-full.mt-6 {
+  margin-top: 2rem;
+  position: relative;
+  z-index: 5;
+}
+
+/* Estilos más específicos para botones de categoría con ajuste perfecto */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a {
+  width: 100% !important;
+  max-width: none !important;
+  height: 180px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto !important;
+  padding: 1.5rem !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}
+
+/* Ajustar el texto de los botones para que sea uniforme */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button h3,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a h3 {
+  font-size: 1.125rem !important;
+  line-height: 1.5 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  width: 100% !important;
+  text-align: center !important;
+  height: 1.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ajustar específicamente el botón G.Superior para alinearlo correctamente */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2),
+button[data-categoria="grado-superior"],
+[class*='grado-superior'] {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Asegurar que los círculos de iconos tengan el mismo tamaño */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button .rounded-full,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a .rounded-full {
+  width: 4rem !important;
+  height: 4rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Asegurar que los contadores de documentos tengan la misma altura */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button p,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a p {
+  height: 1.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-top: 0.5rem !important;
+  padding: 0.25rem 0.75rem !important;
+}
+
+/* Estilos mejorados para títulos de sección */
+.title-bordered {
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 1.5rem auto;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.title-bordered span {
+  position: relative;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid #3b82f6;
+  border-top: 2px solid #3b82f6;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark .title-bordered span {
+  border-color: #60a5fa;
+  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Añadir un pseudo-elemento para crear un efecto de destacado */
+.title-bordered span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+  z-index: -1;
+  border-radius: 4px;
+}
+
+.dark .title-bordered span::before {
+  background: linear-gradient(to right, rgba(96, 165, 250, 0.05), rgba(96, 165, 250, 0.1), rgba(96, 165, 250, 0.05));
+}
+
+/* Estilos específicos para el color del botón G.Superior - versión mejorada */
+button[data-categoria="grado-superior"],
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2) {
+  background-color: rgba(139, 92, 246, 0.15) !important; /* Color morado clarito para todo el botón */
+  border: 1px solid rgba(139, 92, 246, 0.3) !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="grado-superior"] *,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2) * {
+  background-color: transparent !important; /* Asegurar que todos los elementos hijos sean transparentes */
+}
+
+button[data-categoria="grado-superior"] p,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2) p {
+  background-color: transparent !important; /* El párrafo debe ser transparente */
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+button[data-categoria="grado-superior"] .rounded-full,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2) .rounded-full {
+  background-color: transparent !important; /* El círculo también debe ser transparente */
+  background: none !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="grado-superior"] .bg-gray-100,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2) .bg-gray-100 {
+  background-color: transparent !important;
+  background: none !important;
+}
+
+button[data-categoria="grado-superior"] .dark\:bg-gray-700,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2) .dark\:bg-gray-700 {
+  background-color: transparent !important;
+  background: none !important;
+}
+
+button[data-categoria="grado-superior"] svg,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2) svg {
+  color: #8b5cf6 !important; /* Color morado para el icono */
+}
+
+button[data-categoria="grado-superior"].bg-blue-50,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2).bg-blue-50 {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+  border-color: #8b5cf6 !important;
+}
+
+button[data-categoria="grado-superior"]:hover,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(2):hover {
+  background-color: rgba(139, 92, 246, 0.2) !important; /* Color morado más intenso al pasar el cursor */
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Estilos específicos para el color del botón Universidad - azul */
+button[data-categoria="universidad"],
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(1) {
+  background-color: rgba(79, 70, 229, 0.15) !important; /* Color azul clarito para todo el botón */
+  border: 1px solid rgba(79, 70, 229, 0.3) !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="universidad"] *,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(1) * {
+  background-color: transparent !important;
+}
+
+button[data-categoria="universidad"] p,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(1) p {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+button[data-categoria="universidad"] .rounded-full,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(1) .rounded-full {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="universidad"] svg,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(1) svg {
+  color: #4F46E5 !important; /* Color azul para el icono */
+}
+
+button[data-categoria="universidad"]:hover,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(1):hover {
+  background-color: rgba(79, 70, 229, 0.2) !important;
+  box-shadow: 0 0 15px rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Estilos específicos para el color del botón Bachillerato - amarillo */
+button[data-categoria="bachillerato"],
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(3) {
+  background-color: rgba(245, 158, 11, 0.15) !important; /* Color amarillo clarito para todo el botón */
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="bachillerato"] *,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(3) * {
+  background-color: transparent !important;
+}
+
+button[data-categoria="bachillerato"] p,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(3) p {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+button[data-categoria="bachillerato"] .rounded-full,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(3) .rounded-full {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="bachillerato"] svg,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(3) svg {
+  color: #F59E0B !important; /* Color amarillo para el icono */
+}
+
+button[data-categoria="bachillerato"]:hover,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(3):hover {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Estilos específicos para el color del botón Profesional - rosa */
+button[data-categoria="profesional"],
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(4) {
+  background-color: rgba(236, 72, 153, 0.15) !important; /* Color rosa clarito para todo el botón */
+  border: 1px solid rgba(236, 72, 153, 0.3) !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="profesional"] *,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(4) * {
+  background-color: transparent !important;
+}
+
+button[data-categoria="profesional"] p,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(4) p {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+button[data-categoria="profesional"] .rounded-full,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(4) .rounded-full {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="profesional"] svg,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(4) svg {
+  color: #EC4899 !important; /* Color rosa para el icono */
+}
+
+button[data-categoria="profesional"]:hover,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(4):hover {
+  background-color: rgba(236, 72, 153, 0.2) !important;
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.2) !important;
+}
+
+/* Estilos específicos para el color del botón Otros - gris */
+button[data-categoria="otros"],
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(5) {
+  background-color: rgba(107, 114, 128, 0.15) !important; /* Color gris clarito para todo el botón */
+  border: 1px solid rgba(107, 114, 128, 0.3) !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="otros"] *,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(5) * {
+  background-color: transparent !important;
+}
+
+button[data-categoria="otros"] p,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(5) p {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+button[data-categoria="otros"] .rounded-full,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(5) .rounded-full {
+  background-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+button[data-categoria="otros"] svg,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(5) svg {
+  color: #6B7280 !important; /* Color gris para el icono */
+}
+
+button[data-categoria="otros"]:hover,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:nth-child(5):hover {
+  background-color: rgba(107, 114, 128, 0.2) !important;
+  box-shadow: 0 0 15px rgba(107, 114, 128, 0.2) !important;
+}
+
+/* Reforzar legibilidad para todo el texto en la aplicación */
+p, h1, h2, h3, h4, h5, h6, span, a, button, div, input, textarea, select, label {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;
+  letter-spacing: 0.01em !important;
+}
+
+.dark p, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, 
+.dark span, .dark a, .dark button, .dark div, .dark input, 
+.dark textarea, .dark select, .dark label {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Mejorar contraste y legibilidad de textos en los botones de categoría */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button h3,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a h3 {
+  font-weight: 600 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.dark .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button h3,
+.dark .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a h3 {
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Mejorar legibilidad para textos en tarjetas */
+.carousel-card h3, 
+.carousel-card p,
+.carousel-card span {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+
+.dark .carousel-card h3, 
+.dark .carousel-card p,
+.dark .carousel-card span {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Mejorar la legibilidad de los contadores de documentos */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button p {
+  font-weight: 600 !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.dark .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button p {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Mejorar legibilidad de los títulos principales */
+h2.title-bordered span, 
+h2.text-2xl {
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Fondos semitransparentes para mejorar la legibilidad */
+.bg-white/70, .dark:bg-gray-700/70 {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Estilos para efecto de desenfoque en el fondo cuando el ratón está encima */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.4), 
+    rgba(0, 0, 0, 0.3)
+  ), 
+  url('./resources/masanz.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--bg-opacity);
+  z-index: -1;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* Clases para controlar el desenfoque del fondo */
+body.blur-background::before {
+  filter: blur(8px);
+  opacity: calc(var(--bg-opacity) + 0.1);
+}
+
+/* Hacer que los botones de categoría activen el efecto de desenfoque */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:hover,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a:hover {
+  z-index: 10;
+}
+
+/* Efecto de elevación para los botones al pasar el ratón */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:hover,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  z-index: 10;
+}
+
+/* Hacer que los elementos interactivos activen el efecto de desenfoque */
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button,
+.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a,
+.carousel-card,
+.title-bordered span,
+.btn-blue,
+.btn-ver,
+.btn-descargar,
+.btn-borrar {
+  position: relative;
+  z-index: 1;
+}
+
+/* Restaurar fondo cuando se hace clic en cualquier lugar o en carga de página */
+html {
+  cursor: default;
+}
+
+html:active body.blur-background::before {
+  filter: none !important;
+  opacity: var(--bg-opacity) !important;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* Asegurar que el efecto de desenfoque se elimine al hacer clic */
+body:active.blur-background::before {
+  filter: none !important;
+  opacity: var(--bg-opacity) !important;
+}
+
+/* Eliminar desenfoque en navegación */
+a:focus, a:active, button:focus, button:active {
+  outline: none;
+}
+
+a:focus ~ body.blur-background::before,
+a:active ~ body.blur-background::before,
+button:focus ~ body.blur-background::before,
+button:active ~ body.blur-background::before {
+  filter: none !important;
+  opacity: var(--bg-opacity) !important;
+}
+
+/* JavaScript global para gestionar el desenfoque */
+:root {
+  --blur-active: false;
+}
+
+/* Script para eliminar la clase blur-background al hacer clic en cualquier lugar */
+body::after {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Aplicar la fuente del carrusel en la página de configuraciones */
+[class*="user-documents-page"] h1,
+[class*="user-documents-page"] h2,
+[class*="user-documents-page"] h3,
+[class*="user-documents-page"] p,
+[class*="user-documents-page"] button,
+[class*="user-documents-page"] select,
+[class*="settings"] h1,
+[class*="settings"] h2,
+[class*="settings"] h3,
+[class*="settings"] p,
+[class*="settings"] button,
+[class*="settings"] select {
+  font-family: var(--font-family-base) !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Estilos consistentes para títulos entre carrusel y settings */
+.carousel-card h3,
+[class*="user-documents-page"] h3,
+[class*="settings"] h3 {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  letter-spacing: -0.009em !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Estilos consistentes para descripciones entre carrusel y settings */
+.carousel-card p,
+[class*="user-documents-page"] .text-gray-500,
+[class*="settings"] .text-gray-500 {
+  font-size: 0.875rem !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.022em !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Estilos consistentes para botones entre carrusel y settings */
+.btn-blue,
+[class*="user-documents-page"] button.bg-blue-600,
+[class*="settings"] button.bg-blue-600 {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.25px !important;
+  border-radius: 25px !important;
+  box-shadow: 0 2px 4px rgba(15, 108, 191, 0.15) !important;
+}
+
+/* Específicamente para componentes MUI */
+.MuiTypography-root,
+.MuiButton-root,
+.MuiInputBase-root,
+.MuiMenuItem-root,
+.MuiTab-root,
+.MuiChip-root,
+.MuiAlert-root,
+.MuiTableCell-root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Ajuste específico para textos en títulos */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+/* Aplicar colores específicos para modo oscuro */
+.dark body {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.dark .MuiSvgIcon-root,
+.dark svg,
+.dark .MuiIcon-root {
+  color: white !important;
+  fill: white !important;
+}
+
+.dark .MuiTypography-root {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark .MuiOutlinedInput-root,
+.dark .MuiInputBase-root {
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark .MuiInputLabel-root {
+  color: #E0E0E0 !important;
+}
+
+.dark .MuiPaper-root,
+.dark .MuiAppBar-root,
+.dark .MuiDrawer-paper,
+.dark .MuiCard-root {
+  background: rgba(15, 15, 15, 0.9) !important;
+  color: #FFFFFF !important;
+}
+
+.dark .MuiTableCell-root {
+  color: #FFFFFF !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .MuiChip-root {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+}
+
+.dark .MuiChip-outlined {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark a {
+  color: #4dabff !important;
+}
+
+/* Asegurar que los textos sean legibles sobre fondos oscuros */
+.dark button,
+.dark .MuiButton-root,
+.dark .MuiIconButton-root {
+  color: #FFFFFF !important;
+}
+
+/* Mejorar contraste para botones en modo oscuro */
+.dark button.bg-blue-600,
+.dark .bg-blue-600,
+.dark .btn-ver,
+.dark .btn-descargar {
+  background: #1a90ff !important;
+  color: white !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark button.bg-blue-600:hover,
+.dark .bg-blue-600:hover,
+.dark .btn-ver:hover,
+.dark .btn-descargar:hover {
+  background: #0a84ff !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Mejorar visibilidad de los efectos de hover en modo oscuro */
+.dark .hover\:bg-gray-100:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Ajustar el fondo con imagen en modo oscuro para mayor contraste */
+.dark body::before {
+  opacity: 0.06;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.8), 
+    rgba(0, 0, 0, 0.7)
+  ), 
+  url('./resources/masanz.jpg');
+}
+
+/* Estilos para documentos y tarjetas en modo oscuro */
+.dark .documento-card {
+  background-color: rgba(25, 25, 25, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Estilos específicos para el footer en modo oscuro */
+.dark footer,
+.dark [component="footer"],
+.dark .MuiBox-root[component="footer"] {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark footer *,
+.dark [component="footer"] *,
+.dark .MuiBox-root[component="footer"] * {
+  color: #FFFFFF !important;
+}
+
+.dark footer svg,
+.dark [component="footer"] svg,
+.dark .MuiBox-root[component="footer"] svg {
+  color: #FFFFFF !important;
+  fill: #FFFFFF !important;
+}
+
+.dark footer a,
+.dark [component="footer"] a,
+.dark .MuiBox-root[component="footer"] a {
+  color: #4dabff !important;
+}
+
+.dark footer a:hover svg,
+.dark [component="footer"] a:hover svg,
+.dark .MuiBox-root[component="footer"] a:hover svg {
+  color: #4dabff !important;
+  fill: #4dabff !important;
+}
+
+.dark footer .border-t,
+.dark [component="footer"] .border-t,
+.dark .MuiBox-root[component="footer"] .border-t {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark footer h3,
+.dark footer h4,
+.dark [component="footer"] h3,
+.dark [component="footer"] h4,
+.dark .MuiBox-root[component="footer"] h3,
+.dark .MuiBox-root[component="footer"] h4 {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark footer p,
+.dark [component="footer"] p,
+.dark .MuiBox-root[component="footer"] p {
+  color: #FFFFFF !important;
+}
+
+/* Estilos específicos para página de perfil en modo oscuro */
+.dark [class*="MuiBox-root"] h5,
+.dark [class*="MuiBox-root"] .MuiTypography-h5,
+.dark [class*="MuiBox-root"] .MuiTypography-root.MuiTypography-h5 {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark [class*="MuiBox-root"] .MuiTypography-body1,
+.dark [class*="MuiBox-root"] .MuiTypography-body2 {
+  color: #FFFFFF !important;
+}
+
+/* Específicamente para el correo electrónico en el perfil */
+.dark [class*="MuiBox-root"] .MuiTypography-body1[color="text.secondary"] {
+  color: #E0E0E0 !important;
+}
+
+/* Para destacar los campos de texto en formularios del perfil en modo oscuro */
+.dark .MuiTextField-root .MuiInputBase-input {
+  color: #FFFFFF !important;
+}
+
+.dark .MuiTextField-root .MuiFormLabel-root {
+  color: #E0E0E0 !important;
+}
+
+.dark .MuiTextField-root .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark .MuiTextField-root:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Estilos específicos para los elementos del perfil */
+.dark .profile-email {
+  color: #FFFFFF !important;
+  opacity: 0.9;
+}
+
+.dark .profile-bio {
+  color: #FFFFFF !important;
+  opacity: 0.95;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Asegurar que todos los textos en la página de perfil sean visibles */
+.dark [class*="profile"] .MuiTypography-root,
+.dark [class*="profile"] .MuiFormLabel-root,
+.dark [class*="profile"] .MuiInputBase-input,
+.dark [class*="profile"] .MuiTab-root,
+.dark [class*="profile"] p,
+.dark [class*="profile"] h5,
+.dark [class*="profile"] h6 {
+  color: #FFFFFF !important;
+}
+
+/* Asegurar que los valores de los campos de formulario en modo oscuro sean visibles */
+.dark .MuiFormControl-root .MuiInputBase-root .MuiInputBase-input,
+.dark .MuiFormControl-root .MuiInputLabel-root,
+.dark .MuiFormControl-root .MuiFormHelperText-root {
+  color: #FFFFFF !important;
+  caret-color: #FFFFFF;
+}
+
+/* Aplicar fondo más oscuro a los inputs en modo oscuro para mejor contraste */
+.dark .MuiOutlinedInput-root {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Agregar borde más visible en inputs en modo oscuro */
+.dark .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  border-width: 1px !important;
+}
+
+/* Mejorar la visibilidad del placeholder en modo oscuro */
+.dark .MuiInputBase-input::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1 !important;
+}
+
+/* Asegurar que los campos de texto en el formulario de perfil sean visibles en modo oscuro */
+.dark .MuiTextField-root .MuiInputBase-input {
+  color: #FFFFFF !important;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Asegurar que todos los textos en la página de perfil sean visibles - incluso cuando no están en modo edición */
+.dark [class*="profile"] .MuiTypography-root,
+.dark [class*="profile"] .MuiFormLabel-root,
+.dark [class*="profile"] .MuiInputBase-input,
+.dark [class*="profile"] .MuiTab-root,
+.dark [class*="profile"] p,
+.dark [class*="profile"] h5,
+.dark [class*="profile"] h6,
+.dark [class*="profile"] span,
+.dark [class*="profile"] a,
+.dark [class*="profile"] div,
+.dark [class*="profile"] label {
+  color: #FFFFFF !important;
+}
+
+/* Asegurar que los textos sean visibles en todos los estados */
+.dark .MuiPaper-root .MuiTypography-root {
+  color: #FFFFFF !important;
+}
+
+/* Aplicar un fondo más visible a los campos de texto deshabilitados en modo oscuro */
+.dark .MuiInputBase-root.Mui-disabled {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .MuiInputBase-root.Mui-disabled .MuiInputBase-input {
+  color: rgba(255, 255, 255, 0.7) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+@media (max-width: 768px) {
+  .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+@layer components {
+  /* Estilos para móviles menores a 640px (breakpoint sm de Tailwind) */
+  @media (max-width: 639px) {
+    /* Forzar una sola columna en móviles */
+    .grid.grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 {
+      grid-template-columns: 1fr !important;
+    }
+    
+    /* Mejoras para la experiencia táctil en móvil */
+    .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button,
+    .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a {
+      height: 150px !important;
+      margin-bottom: 1rem !important;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+      border-radius: 12px !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 button:active,
+    .grid-cols-2.sm\:grid-cols-3.lg\:grid-cols-5 a:active {
+      transform: scale(0.98) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Aumentar tamaño de botones interactivos para mejor uso táctil */
+    .btn-blue,
+    button[type="submit"],
+    button[type="button"] {
+      min-height: 44px !important;
+      padding: 10px 16px !important;
+      font-size: 16px !important;
+    }
+
+    /* Mejorar legibilidad de textos en móvil */
+    h1 { font-size: 1.75rem !important; }
+    h2 { font-size: 1.5rem !important; }
+    h3 { font-size: 1.25rem !important; }
+    p, span, a { font-size: 1rem !important; }
+
+    /* Ajustar espacio entre elementos */
+    .container.mx-auto {
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    }
+
+    /* Optimizar espaciado vertical */
+    .mb-12 { margin-bottom: 2rem !important; }
+    .mt-6 { margin-top: 1.5rem !important; }
+    .py-10 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+
+    /* Ajustar iconos para mejor visibilidad */
+    .w-16.h-16.rounded-full {
+      width: 3.5rem !important;
+      height: 3.5rem !important;
+    }
+    
+    /* Estilos específicos para el carrusel móvil */
+    .mobile-card {
+      width: 80% !important;
+      max-width: 240px !important;
+      min-height: 150px !important;
+      margin: 0.25rem !important;
+    }
+    
+    .mobile-card h3 {
+      font-size: 0.95rem !important;
+      margin-bottom: 0.35rem !important;
+    }
+    
+    .mobile-card p {
+      font-size: 0.8rem !important;
+      line-height: 1.2 !important;
+      margin-bottom: 0.5rem !important;
+    }
+  }
+}
+
+/* Estilos específicos para carrusel móvil */
+.mobile-carousel {
+  padding: 0.75rem 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+.mobile-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-carousel-inner {
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.mobile-card {
+  scroll-snap-align: center;
+  min-height: 150px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-card:active {
+  transform: scale(0.98);
+}
+
+.mobile-card h3 {
+  font-size: 0.95rem;
+  line-height: 1.3;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-card p {
+  font-size: 0.8rem;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Estilos forzados para mensajes del administrador */
+.MuiDialog-root [role="dialog"] {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border: 2px solid #ff0000 !important;
+}
+
+.MuiDialog-root .MuiDialogTitle-root,
+.MuiDialog-root .MuiDialogContent-root,
+.MuiDialog-root .MuiDialogActions-root {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+}
+
+.MuiDialog-root .MuiTypography-root {
+  color: #ff0000 !important;
+}
+
+.MuiDialog-root .MuiSvgIcon-root {
+  color: #ff0000 !important;
+}
+
+/* Estilos forzados para mensajes del administrador en el chat */
+.admin-message {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border-left: 4px solid #ff0000 !important;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3) !important;
+}
+
+.admin-message * {
+  color: #ff0000 !important;
+}
+
+.admin-avatar {
+  background-color: #ff0000 !important;
+  border-color: #ff0000 !important;
+}
+
+.admin-name {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+}
+
+/* Selector de alta especificidad para forzar el color rojo */
+html body .MuiBox-root .MuiTypography-root.admin-text,
+html body .MuiBox-root .MuiSvgIcon-root.admin-icon {
+  color: #ff0000 !important;
+}
+
+/* Estilos para los mensajes del administrador */
+.admin-message {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border-left: 4px solid #ff0000 !important;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3) !important;
+}
+
+.admin-message * {
+  color: #ff0000 !important;
+}
+
+.admin-avatar {
+  background-color: #ff0000 !important;
+  border-color: #ff0000 !important;
+}
+
+.admin-name {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+}
+
+html body .MuiBox-root .MuiTypography-root.admin-text,
+html body .admin-text {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+}
+
+.admin-icon {
+  color: #ff0000 !important;
+}
+
+/* Mejora de especificidad para mensajes de administrador */
+html body .MuiPaper-root .MuiBox-root .admin-message,
+#root .admin-message {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border-left: 4px solid #ff0000 !important;
+}
+
+/* Asegurar que los textos dentro del mensaje de administrador sean rojos */
+#root .admin-message .MuiTypography-root,
+#root .admin-message span,
+#root .admin-message p,
+#root .admin-message div {
+  color: #ff0000 !important;
+}
+
+/* Estilos para el mensaje de bienvenida */
+.welcome-message * {
+  color: #ff0000 !important;
+}
+
+.welcome-message p, 
+.welcome-message span, 
+.welcome-message div, 
+.welcome-message h1, 
+.welcome-message h2, 
+.welcome-message h3, 
+.welcome-message h4, 
+.welcome-message h5, 
+.welcome-message h6 {
+  color: #ff0000 !important;
+}
+
+.MuiPaper-root .welcome-message .MuiTypography-root {
+  color: #ff0000 !important;
+}
+
+/* Forzar color rojo para el título de bienvenida */
+.MuiDialog-root .MuiDialogTitle-root .MuiTypography-root,
+.MuiDialogTitle-root .MuiTypography-h5,
+.MuiDialogTitle-root .MuiTypography-root[sx],
+.MuiPaper-root .MuiDialogTitle-root .MuiTypography-root,
+html body .MuiDialog-root .MuiDialogTitle-root .MuiTypography-root,
+.MuiDialog-root[open] .MuiDialogTitle-root .MuiTypography-root,
+.MuiDialogTitle-root h5,
+.MuiDialogTitle-root h3 {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-shadow: none !important;
+}
+
+/* Estilos específicos para el título de bienvenida por ID y clase */
+#welcome-title,
+.welcome-title {
+  color: red !important;
+}
+
+#welcome-title.MuiTypography-root,
+.welcome-title.MuiTypography-root,
+html body .MuiDialog-root #welcome-title,
+html body .MuiDialog-root .welcome-title {
+  color: #ff0000 !important;
+}
+
+/* Aumentar la especificidad al máximo para el título de bienvenida */
+html body .MuiDialog-root .MuiDialogTitle-root #welcome-title.MuiTypography-root,
+html body .MuiDialog-root .MuiDialogTitle-root .welcome-title.MuiTypography-root {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-shadow: none !important;
+}
+
+/* Ajustes para mensajes del administrador en móviles */
+@media (max-width: 1075px) {
+  /* Centrar los mensajes del administrador en la pantalla en móviles */
+  .admin-message {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 90% !important;
+    max-width: 90% !important;
+  }
+  
+  /* Mejorar la visualización del contenedor del mensaje */
+  .admin-message-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  
+  /* Reorganizar el diseño del avatar y nombre de usuario para el administrador en móviles */
+  .admin-message-container .MuiBox-root:first-of-type {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-bottom: 8px !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Ajustar el avatar del administrador */
+  .admin-message-container .admin-avatar {
+    margin-right: 8px !important;
+  }
+  
+  /* Ajustar el texto del nombre del administrador */
+  .admin-message-container .admin-name {
+    max-width: none !important;
+    text-align: left !important;
+  }
+
+  /* Asegurar que el contenido del mensaje del administrador ocupe todo el ancho disponible */
+  .admin-message-container > .MuiBox-root:nth-of-type(2) {
+    max-width: 100% !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+}
+
+/* Mejoras generales de responsividad para toda la web */
+@media (max-width: 1075px) {
+  /* Mejorar márgenes y paddings generales */
+  .MuiContainer-root {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  
+  /* Ajustar tamaño de texto para mejor legibilidad en móviles */
+  body {
+    font-size: 16px !important;
+  }
+  
+  /* Optimizar espacio en la interfaz de chat */
+  .MuiPaper-root.MuiPaper-elevation3 {
+    border-radius: 0 !important;
+    height: calc(100vh - 20px) !important;
+  }
+  
+  /* Mejorar espaciado de mensajes */
+  .MuiGrid-item {
+    padding: 6px 8px !important;
+  }
+  
+  /* Optimizar burbujas de mensajes */
+  .MuiBox-root.MuiBox-root {
+    max-width: 100% !important;
+  }
+  
+  /* Mejorar la entrada de mensajes */
+  .message-input-container {
+    padding: 8px !important;
+  }
+  
+  .message-input {
+    padding: 10px 12px !important;
+    font-size: 16px !important;
+  }
+  
+  /* Ajustar botones de acción */
+  .action-buttons button {
+    padding: 8px !important;
+    min-width: 0 !important;
+  }
+  
+  /* Mejorar la usabilidad de los botones en dispositivos táctiles */
+  .MuiButtonBase-root {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  /* Asegurar que los inputs sean suficientemente grandes para interacciones táctiles */
+  .MuiInputBase-root {
+    min-height: 44px !important;
+  }
+  
+  /* Ajustar diálogos para que ocupen más espacio en pantallas pequeñas */
+  .MuiDialog-paper {
+    margin: 16px !important;
+    width: calc(100% - 32px) !important;
+    max-width: none !important;
+  }
+}
+
+/* Mejoras adicionales para UI/UX móvil profesional */
+@media (max-width: 1075px) {
+  /* Optimizar la navegación para dispositivos táctiles */
+  nav {
+    height: 56px !important;
+    padding: 0 12px !important;
+  }
+  
+  nav button, 
+  nav a {
+    margin: 0 4px !important;
+  }
+  
+  /* Mejorar el espaciado y la legibilidad */
+  h1 { 
+    font-size: 24px !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2 { 
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+  }
+  
+  h3 { 
+    font-size: 18px !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* Asegurar que todas las tarjetas y contenedores tengan buen espaciado */
+  .MuiCard-root,
+  .MuiPaper-root {
+    padding: 12px !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* Mejorar la apariencia de formularios en móvil */
+  .MuiFormControl-root {
+    margin-bottom: 16px !important;
+    width: 100% !important;
+  }
+  
+  /* Optimizar grids para visualización móvil */
+  .MuiGrid-container {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .MuiGrid-item {
+    padding: 8px !important;
+  }
+  
+  /* Mejorar la interactividad de los elementos táctiles */
+  .MuiButton-root:active,
+  .MuiIconButton-root:active,
+  .MuiButtonBase-root:active {
+    transform: scale(0.96) !important;
+    transition: transform 0.1s ease-in-out !important;
+  }
+  
+  /* Optimizar uso de espacio en pantalla */
+  .container, 
+  .MuiContainer-root {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  
+  /* Ajustes específicos para la interfaz de chat en móvil */
+  .MuiContainer-root[sx*="height: '100vh'"] {
+    height: calc(100vh - 56px) !important;
+    padding-top: 56px !important;
+    padding-bottom: 0 !important;
+  }
+  
+  /* Asegurar que la lista de mensajes tenga suficiente espacio para scroll */
+  .messages-container {
+    max-height: calc(100vh - 170px) !important;
+  }
+  
+  /* Evitar que el teclado virtual en móviles rompa el layout */
+  @supports (-webkit-touch-callout: none) {
+    /* Estilos específicos para iOS */
+    .message-input-container {
+      position: sticky !important;
+      bottom: 0 !important;
+      background-color: var(--card-bg) !important;
+      z-index: 10 !important;
+      padding-bottom: env(safe-area-inset-bottom, 8px) !important;
+    }
+  }
+  
+  /* Mejorar la experiencia de scroll en listas largas */
+  .MuiList-root {
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Optimizar espaciado en diálogos */
+  .MuiDialogTitle-root {
+    padding: 16px !important;
+  }
+  
+  .MuiDialogContent-root {
+    padding: 16px !important;
+    padding-top: 8px !important;
+  }
+  
+  .MuiDialogActions-root {
+    padding: 12px 16px !important;
+  }
+}
+
+/* Específicamente para mensajes del admin en móviles */
+@media (max-width: 1075px) {
+  .admin-message {
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+    padding: 12px !important;
+    width: 85% !important;
+    max-width: 85% !important;
+    border-left-width: 4px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.35) !important;
+  }
+  
+  .admin-message-container .admin-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  /* Mejorar visibilidad del texto administrador */
+  .admin-message .admin-text {
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.01em !important;
+  }
+}
+
+/* Meta viewport para responsividad */
+@media screen and (max-width: 1075px) {
+  html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* Ajustes para las tarjetas de documentos en vista móvil - REGLAS MÁS AGRESIVAS */
+@media all and (max-width: 1075px) {
+  /* Documentos página - forzar visualización vertical en móviles */
+  html body .documentos-container .MuiGrid-container,
+  html body .user-documents-page .MuiGrid-container,
+  html body #root .MuiGrid-container,
+  html body #root .MuiGrid-container .MuiGrid-item,
+  html body .MuiGrid-container,
+  html body .MuiGrid-root {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  html body .documentos-container .MuiGrid-item,
+  html body .user-documents-page .MuiGrid-item,
+  html body #root .MuiGrid-container .MuiGrid-item,
+  html body .MuiGrid-item {
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    margin-bottom: 16px !important;
+    flex: 1 1 100% !important;
+  }
+  
+  /* Forzar que cada tarjeta sea mostrada completamente en pantallas pequeñas */
+  html body .MuiGrid-root .MuiCard-root,
+  html body .documento-card,
+  html body .MuiPaper-root,
+  html body #root .MuiCard-root {
+    height: auto !important;
+    min-height: auto !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Asegurar que el contenido de las tarjetas sea legible */
+  html body .MuiCardContent-root {
+    padding: 16px !important;
+  }
+  
+  /* Ajustar el espacio entre elementos */
+  html body .MuiGrid-spacing-xs-3 > .MuiGrid-item {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  
+  /* Optimizar visualización de botones en tarjetas */
+  html body .documento-card .MuiCardActions-root,
+  html body .MuiCardActions-root {
+    padding: 8px 16px 16px !important;
+    flex-wrap: wrap !important;
+  }
+  
+  html body .documento-card .MuiCardActions-root .MuiButton-root,
+  html body .MuiCardActions-root .MuiButton-root {
+    margin-bottom: 8px !important;
+    flex: 1 1 auto !important;
+    min-width: 120px !important;
+  }
+
+  /* Forzar una sola columna para TODOS los grid de Material UI */  
+  html body .MuiGrid-container[class*="MuiGrid-spacing"] {
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+}
+
+/* Estilos adicionales para garantizar una visualización vertical adecuada */
+@media all and (max-width: 1075px) {
+  html body .documentos-page {
+    overflow-x: hidden !important;
+  }
+  
+  /* Modificar Grid específicamente para la página de documentos */
+  html body .documentos-page .MuiGrid-container,
+  html body .MuiGrid-container {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Aplicar los mismos estilos a cualquier Grid en la aplicación */
+  html body .MuiGrid-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+  }
+
+  /* Forzar visualización móvil para grid específicos */
+  html body div[style*="display: grid"],
+  html body div[style*="display:grid"],
+  html body .MuiGrid-container,
+  html body .MuiGrid-root {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+}
+
+/* Ajustar los breakpoints de Tailwind y Material UI para móviles - MÁS ESPECÍFICOS */
+@media all and (max-width: 1075px) {
+  html body .sm\:grid-cols-3,
+  html body .lg\:grid-cols-5,
+  html body .grid-cols-2,
+  html body .grid,
+  html body [class*="grid-cols-"] {
+    grid-template-columns: 1fr !important; /* Forzar vista vertical */
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Ajustar los tamaños de Grid de Material UI con máxima especificidad */
+  html body .MuiGrid-root .MuiGrid-item.MuiGrid-grid-sm-6,
+  html body .MuiGrid-root .MuiGrid-item.MuiGrid-grid-md-4,
+  html body #root .MuiGrid-item,
+  html body .MuiGrid-item[class*="MuiGrid-grid-"],
+  html body div[class*="MuiGrid-item"] {
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  /* Forzar columna única para cualquier grid de Tailwind o Material UI */
+  html body div.MuiGrid-container,
+  html body .grid-container,
+  html body [class*="grid-cols"],
+  html body .MuiGrid-root {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+}
+
+/* Reglas extremadamente específicas para cualquier grid */
+@media all and (max-width: 1075px) {
+  * {
+    max-width: 100% !important;
+  }
+  
+  html body .MuiGrid-container .MuiGrid-item[class*="MuiGrid-grid"],
+  html body .MuiGrid-root .MuiGrid-item {
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+}
+
+/* MENSAJE DE ADMINISTRADOR - MÁXIMA PRIORIDAD */
+.admin-message,
+.MuiGrid-root .admin-message,
+.messages-container .admin-message,
+div[class~="admin-message"],
+#root div.admin-message,
+html body div.admin-message {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border: 4px solid #ff0000 !important;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.8) !important;
+  text-align: center !important;
+  margin: 20px auto !important;
+  padding: 20px !important;
+  border-radius: 10px !important;
+  width: 90% !important;
+  max-width: 90% !important;
+  z-index: 9999 !important;
+  display: block !important;
+  position: relative !important;
+}
+
+/* Todos los elementos dentro del mensaje de admin */
+.admin-message *,
+.MuiGrid-root .admin-message *,
+.messages-container .admin-message *,
+div[class~="admin-message"] *,
+#root div.admin-message *,
+html body div.admin-message * {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.5) !important;
+}
+
+/* Contenedor del mensaje de admin */
+.admin-message-container,
+.MuiGrid-root .admin-message-container,
+.messages-container .admin-message-container,
+div[class~="admin-message-container"],
+#root div.admin-message-container,
+html body div.admin-message-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 20px auto !important;
+}
+
+/* Texto específico del admin */
+.admin-text,
+.MuiGrid-root .admin-text,
+.messages-container .admin-text,
+div[class~="admin-text"],
+#root div.admin-text,
+html body div.admin-text {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  font-size: 1.1rem !important;
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.3) !important;
+}
+
+/* Estilos específicos para el avatar del admin */
+.admin-avatar,
+.MuiGrid-root .admin-avatar,
+.messages-container .admin-avatar,
+div[class~="admin-avatar"],
+#root div.admin-avatar,
+html body div.admin-avatar {
+  background-color: #ff0000 !important;
+  border: 2px solid #ff0000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+}
+
+/* Nombre del admin */
+.admin-name,
+.MuiGrid-root .admin-name,
+.messages-container .admin-name,
+div[class~="admin-name"],
+#root div.admin-name,
+html body div.admin-name {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+/* Para móviles */
+@media (max-width: 1075px) {
+  .admin-message,
+  html body div.admin-message {
+    width: 90% !important;
+    max-width: 90% !important;
+    margin: 10px auto !important;
+    padding: 15px !important;
+  }
+  
+  .admin-text,
+  html body div.admin-text {
+    font-size: 1rem !important;
+  }
+}
+
+/* REGLAS DE MÁXIMA PRIORIDAD PARA MENSAJES DE ADMINISTRADOR */
+body [data-admin="true"],
+html body [data-admin="true"],
+#root [data-admin="true"],
+[data-admin="true"] {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border: 4px solid #ff0000 !important;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.8) !important;
+  text-align: center !important;
+  margin: 20px auto !important;
+  padding: 20px !important;
+  border-radius: 10px !important;
+  max-width: 600px !important;
+  width: 90% !important;
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Texto dentro de mensajes de administrador */
+body [data-admin="true"] *,
+html body [data-admin="true"] *,
+#root [data-admin="true"] *,
+[data-admin="true"] * {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 2px rgba(255, 0, 0, 0.5) !important;
+}
+
+/* Inyectar script para forzar estilos */
+body::after {
+  content: "";
+  display: none;
+}
+
+/* Este selector es para inyectar un script que fuerce los estilos de administrador */
+body.chat-page::after {
+  content: "";
+  display: none !important;
+}
+
+@-webkit-keyframes refresh-admin-styles {
+  from { opacity: 0.99; }
+  to { opacity: 1; }
+}
+
+@keyframes refresh-admin-styles {
+  from { opacity: 0.99; }
+  to { opacity: 1; }
+}
+
+/* Aplicar animación para forzar repintado */
+.admin-message,
+.admin-message-container,
+[data-admin="true"] {
+  -webkit-animation: refresh-admin-styles 0.1s ease-in-out;
+  animation: refresh-admin-styles 0.1s ease-in-out;
+}
+
+/* ESTILOS PARA ALERTAS DE ADMINISTRADOR */
+@keyframes fadeInAlert {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+    box-shadow: 0 0 60px rgba(255, 0, 0, 1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(10px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 40px rgba(255, 0, 0, 0.9);
+  }
+}
+
+@keyframes pulseAlert {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 0, 0, 1);
+    transform: scale(1.03);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    transform: scale(1);
+  }
+}
+
+.admin-alert {
+  animation: fadeInAlert 0.5s ease-out, pulseAlert 1.5s infinite ease-in-out;
+  z-index: 10000;
+  color: #FF0000 !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+}
+
+.admin-alert * {
+  color: #FF0000 !important;
+  font-weight: bold !important;
+}
+
+@media (max-width: 1075px) {
+  .admin-alert {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+  }
+  
+  .admin-alert h6 {
+    font-size: 1.3rem !important;
+  }
+  
+  .admin-alert p {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* Animaciones para el modal de anuncios globales */
+@keyframes fadeInModal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-overlay {
+  animation: fadeInModal 0.3s ease-out forwards;
+}
+
+.modal-content {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
+/* Ajustes responsivos para el modal */
+@media (max-width: 1075px) {
+  .modal-content {
+    width: 90% !important;
+    max-width: 90% !important;
+    padding: 15px !important;
+  }
+
+  .modal-content h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .modal-content p {
+    font-size: 1rem !important;
+  }
+}
+
+/* ESTILOS MEJORADOS PARA MENSAJES DE ADMINISTRADOR EN CHAT */
+body .admin-message-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 20px auto !important;
+}
+
+html body .admin-message,
+#root .admin-message,
+body [data-admin="true"],
+.MuiGrid-item .admin-message {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border: 4px solid #ff0000 !important;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.8) !important;
+  text-align: center !important;
+  margin: 20px auto !important;
+  padding: 20px !important;
+  border-radius: 10px !important;
+  width: 90% !important;
+  max-width: 600px !important;
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+body .admin-message * {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+}
+
+body .admin-avatar {
+  background-color: #ff0000 !important;
+  border: 2px solid #ff0000 !important;
+  color: white !important;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+}
+
+body .admin-name {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+body .admin-text {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  font-size: 1.1rem !important;
+  line-height: 1.5 !important;
+}
+
+@media (max-width: 1075px) {
+  body .admin-message {
+    padding: 15px !important;
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 15px auto !important;
+  }
+  
+  body .admin-text {
+    font-size: 1rem !important;
+  }
+}
+
+/* Animación para hacer más visibles los mensajes de administrador */
+@keyframes admin-message-glow {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.7) !important;
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 0, 0, 0.9) !important;
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.7) !important;
+  }
+}
+
+.chat-page .admin-message {
+  animation: admin-message-glow 2s infinite !important;
+}
+
+/* Animaciones para los modales y mensajes del administrador */
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Modal Overlay con animación */
+.modal-overlay {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Contenido del modal con animación */
+.modal-content {
+  animation: scaleIn 0.4s ease-out forwards;
+}
+
+/* Contenedor fijo para asegurar que los mensajes de administrador siempre sean visibles */
+.admin-message-wrapper {
+  position: relative;
+  z-index: 100;
+  margin: 20px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Estilos para enlaces dentro de los mensajes */
+body a,
+.admin-message a {
+  color: inherit;
+  text-decoration: underline;
+  transition: all 0.2s ease;
+}
+
+.admin-message a {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-decoration: underline !important;
+}
+
+.admin-message a:hover,
+body a:hover {
+  opacity: 0.8;
+}
+
+
+

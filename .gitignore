@@ -1,0 +1,123 @@
+# Dependencias
+/node_modules
+/frontend/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+/frontend/coverage
+
+# Producción
+/build
+/frontend/build
+/frontend/dist
+/backend/build
+/backend/bin
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs y editores
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history
+*.iml
+*.iws
+*.ipr
+.factorypath
+
+# Backend
+/backend/target/
+/backend/.gradle
+/backend/out/
+/backend/.mvn/
+/backend/mvnw
+/backend/mvnw.cmd
+/backend/gradle/
+/backend/.settings/
+/backend/build/
+/backend/bin/
+/backend/logs/
+/backend/*.log
+
+# Firebase
+*.log
+firebase-debug.log*
+firebase-debug.*.log*
+.firebase/
+firebase-service-account.json
+
+# Credenciales y configuraciones sensibles
+**/src/main/resources/application-dev.properties
+**/src/main/resources/application-prod.properties
+**/src/main/resources/firebase-credentials.json
+**/src/main/resources/firebase-service-account.json
+**/src/main/resources/keystore.jks
+**/src/main/resources/*.p8
+**/src/main/resources/*.p12
+**/src/main/resources/*.pem
+**/src/main/resources/*.key
+
+# Archivos generados
+.gradle
+.springBeans
+HELP.md
+target/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de bloqueo de dependencias, se pueden incluir según la política del equipo
+# package-lock.json
+# yarn.lock
+
+# Archivos temporales
+*.tmp
+*.temp
+*.bak
+*.swp
+*~.nib
+local.properties
+
+# Carpetas específicas de Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Carpetas específicas de Gradle
+.gradle/
+build/
+
+# Verificaciones de TypeScript
+frontend/tsconfig.tsbuildinfo 

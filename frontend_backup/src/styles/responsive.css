@@ -1,0 +1,167 @@
+/* Estilos responsivos para la aplicación */
+
+/* Variables de tamaños de pantalla (deben coincidir con los breakpoints del hook) */
+:root {
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* Estilos para móviles */
+@media (max-width: 767px) {
+  /* Ajustes de texto */
+  h1, .h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  h2, .h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  h3, .h3 {
+    font-size: 1.25rem !important;
+  }
+  
+  h4, .h4 {
+    font-size: 1.125rem !important;
+  }
+  
+  /* Ajustes de espaciado */
+  .MuiContainer-root {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  /* Ajustes para tarjetas */
+  .MuiCard-root {
+    border-radius: 12px !important;
+  }
+  
+  .MuiCardContent-root {
+    padding: 16px !important;
+  }
+  
+  /* Ajustes para botones flotantes */
+  .MuiFab-root {
+    width: 48px;
+    height: 48px;
+  }
+  
+  /* Ajustes para el bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 56px;
+    z-index: 1100;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Estilos para tablets */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .MuiContainer-root {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  
+  /* Grid para optimizar espacio */
+  .tablet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Ajustes para pantallas de escritorio */
+@media (min-width: 1024px) {
+  .desktop-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+  }
+  
+  .desktop-content {
+    flex-grow: 1;
+    margin-left: 24px;
+  }
+}
+
+/* Utilidades responsivas compartidas */
+
+/* Para ocultar elementos en diferentes tamaños de pantalla */
+.hide-on-mobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hide-on-mobile {
+    display: initial !important;
+  }
+  
+  .show-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hide-on-tablet {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+
+/* Ajustes para orientación específica */
+@media (orientation: landscape) and (max-width: 767px) {
+  /* Ajustes para móviles en landscape */
+  .bottom-nav {
+    height: 48px;
+  }
+  
+  /* Ajustar alto de contenedores para que no se desborden */
+  .mobile-landscape-adjustable {
+    height: calc(100vh - 48px - env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+  }
+}
+
+/* Soporte para notch y áreas seguras */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Utilidades responsive para tamaños */
+.w-full-mobile {
+  width: 100% !important;
+}
+
+@media (min-width: 768px) {
+  .w-full-mobile {
+    width: auto !important;
+  }
+}
+
+/* Ajustes para dark mode */
+@media (prefers-color-scheme: dark) {
+  .auto-dark-mode {
+    background-color: var(--dark-bg) !important;
+    color: var(--dark-text) !important;
+  }
+} 

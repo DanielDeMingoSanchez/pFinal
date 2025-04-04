@@ -1,0 +1,125 @@
+/*
+ * ESTILOS EXCLUSIVOS PARA MENSAJES DE ADMINISTRADOR
+ * Estos estilos tienen máxima prioridad y no pueden ser sobrescritos
+ */
+
+/* Estilo base para mensajes de administrador */
+.admin-message,
+div.admin-message,
+span.admin-message,
+#root .admin-message,
+.MuiBox-root.admin-message,
+[class*="admin-message"],
+.messages-container .admin-message {
+  background-color: #000000 !important;
+  color: #ff0000 !important;
+  border: 4px solid #ff0000 !important;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.8) !important;
+  text-align: center !important;
+  margin: 20px auto !important;
+  padding: 20px !important;
+  border-radius: 10px !important;
+  width: 90% !important;
+  max-width: 600px !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  display: block !important;
+}
+
+/* Todos los elementos dentro de un mensaje de administrador */
+.admin-message *,
+div.admin-message *,
+span.admin-message *,
+#root .admin-message *,
+.MuiBox-root.admin-message *,
+[class*="admin-message"] * {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.5) !important;
+  font-family: inherit !important;
+}
+
+/* Contenedor de mensajes de administrador */
+.admin-message-container,
+div.admin-message-container,
+span.admin-message-container,
+#root .admin-message-container,
+.MuiBox-root.admin-message-container,
+[class*="admin-message-container"],
+.messages-container .admin-message-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 20px auto !important;
+}
+
+/* Avatar de administrador */
+.admin-avatar,
+div.admin-avatar,
+span.admin-avatar,
+#root .admin-avatar,
+.MuiBox-root.admin-avatar,
+[class*="admin-avatar"],
+.MuiAvatar-root.admin-avatar {
+  background-color: #ff0000 !important;
+  border: 2px solid #ff0000 !important;
+  color: white !important;
+  font-weight: bold !important;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+}
+
+/* Nombre de administrador */
+.admin-name,
+div.admin-name,
+span.admin-name,
+#root .admin-name,
+.MuiBox-root.admin-name,
+[class*="admin-name"],
+.MuiTypography-root.admin-name {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  text-align: center !important;
+}
+
+/* Texto de administrador */
+.admin-text,
+div.admin-text,
+span.admin-text,
+#root .admin-text,
+.MuiBox-root.admin-text,
+[class*="admin-text"],
+.MuiTypography-root.admin-text {
+  color: #ff0000 !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+/* Estilos para móviles */
+@media (max-width: 1075px) {
+  .admin-message,
+  div.admin-message,
+  span.admin-message,
+  #root .admin-message,
+  .MuiBox-root.admin-message,
+  [class*="admin-message"],
+  .messages-container .admin-message {
+    width: 85% !important;
+    max-width: 90% !important;
+    padding: 16px !important;
+    margin: 15px auto !important;
+  }
+}
+
+/* Al hacer hover sobre los mensajes de administrador */
+.admin-message:hover,
+div.admin-message:hover,
+#root .admin-message:hover {
+  box-shadow: 0 0 40px rgba(255, 0, 0, 0.9) !important;
+  border-color: #ff5555 !important;
+} 

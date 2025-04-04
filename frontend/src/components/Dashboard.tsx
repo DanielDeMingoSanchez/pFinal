@@ -28,7 +28,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
 import IconWrapper from './ui/IconWrapper';
 import SearchBar from './ui/SearchBar';
 import StatCard from './ui/StatCard';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import FloatingBackButton from './ui/FloatingBackButton';
 import { Box, Typography } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -115,6 +115,48 @@ const Dashboard: React.FC = () => {
     { id: 'profesional', nombre: 'Profesional', icono: FaBriefcase, color: '#EC4899', documentos: 0 },
     { id: 'otros', nombre: 'Otros', icono: MdCategory, color: '#6B7280', documentos: 0 }
   ]);
+
+  // Hook para acceder a la ubicación actual (URL)
+  const location = useLocation();
+
+  // Efecto para leer el parámetro 'search' de la URL y realizar búsqueda automática
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const searchFromUrl = searchParams.get('search');
+    
+    if (searchFromUrl) {
+      console.log('Parámetro de búsqueda detectado en URL:', searchFromUrl);
+      setBusqueda(searchFromUrl);
+      // Usar el término de búsqueda cuando los documentos estén cargados
+      if (documentos.length > 0) {
+        handleSearch(searchFromUrl);
+      }
+    } else {
+      // Si no hay término de búsqueda, mostrar todos los documentos
+      setMostrandoResultados(false);
+    }
+  }, [location.search, documentos.length]);
+
+  // Efecto para escuchar el evento personalizado de búsqueda en tiempo real desde el Navbar
+  useEffect(() => {
+    const handleNavbarSearch = (event: CustomEvent) => {
+      if (event.detail && typeof event.detail.term === 'string') {
+        console.log('Evento de búsqueda recibido desde Navbar:', event.detail.term);
+        setBusqueda(event.detail.term);
+        if (documentos.length > 0) {
+          handleSearch(event.detail.term);
+        }
+      }
+    };
+
+    // Añadir el listener del evento personalizado
+    window.addEventListener('navbarSearch', handleNavbarSearch as EventListener);
+
+    // Limpiar el listener al desmontar
+    return () => {
+      window.removeEventListener('navbarSearch', handleNavbarSearch as EventListener);
+    };
+  }, [documentos]);
 
   // Configuración de tarjetas de estadísticas
   const estadisticasCards: EstadisticaCard[] = [
@@ -496,9 +538,9 @@ const Dashboard: React.FC = () => {
     // 🔍 Filtrar documentos por título o descripción
     const documentosFiltrados = documentos.filter((doc) => 
       doc.titulo.toLowerCase().includes(query.toLowerCase()) ||
-      doc.descripcion.toLowerCase().includes(query.toLowerCase())
+      doc.usuario.nombre.toLowerCase().includes(query.toLowerCase())
     );
-  
+  //
     setResultadosBusqueda(documentosFiltrados);
     setMostrandoResultados(true);
     setPaginaActual(1); // 🔄 Reiniciar paginación
@@ -1006,46 +1048,79 @@ const descargarDocumento = async (docOrId: Documento | string) => {
           backgroundColor: 'transparent !important'
         }}
       >
-        {/* Barra de búsqueda mejorada */}
-        <div className="flex justify-center items-center w-full">
-          <SearchBar 
-            placeholder="Buscar por título..." 
-            onSearch={handleSearch}
-            className="w-full max-w-lg md:max-w-xl lg:max-w-2xl"
-          />
-        </div>
+        {/* Indicador de búsqueda si hay un término */}
+        {busqueda && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center mb-6"
+          >
+            <p className="text-xl font-semibold">
+              Resultados para "{busqueda}"
+            </p>
+       
+          </motion.div>
+        )}
 
         {/* Resultados de búsqueda */}
-        {mostrandoResultados && (
+{mostrandoResultados && (
   <motion.div 
     initial={{ opacity: 0, y: -10 }} 
     animate={{ opacity: 1, y: 0 }} 
     transition={{ duration: 0.3 }}
     className="mt-6"
   >
-    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Resultados de búsqueda</h2>
     {resultadosBusqueda.length > 0 ? (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {resultadosBusqueda.map((doc) => (
-          <div key={doc.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{doc.titulo.length > 10 ? doc.titulo.substring(0, 10) + '...' : doc.titulo}</h3>
-            <p className="text-gray-600 dark:text-gray-400">{doc.descripcion.length > 10 ? doc.descripcion.substring(0, 10) + '...' : doc.descripcion}</p>
-            <div className="mt-2 flex items-center justify-between">
-              <button
-                onClick={() => abrirDocumento(doc)}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition"
-              >
-                Ver
-              </button>&nbsp;
-              <button
-                onClick={() => descargarDocumento(doc)}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition"
-              >
-                Descargar
-              </button>
-            </div>
+      <div className="space-y-2">
+        <ol className="list-decimal list-inside text-sm text-gray-900 dark:text-white">
+          {documentosPaginados.map((doc, index) => (
+            <li key={doc.id} className="bg-white/70 dark:bg-gray-800/70 p-3 rounded flex items-center justify-between shadow-sm">
+              <div className="flex-1">
+                <span className="font-semibold">Título:</span> {doc.titulo} &nbsp;
+                <span className="font-semibold">Usuario:</span> {doc.usuario.nombre}
+              </div>
+              <div className="flex items-center space-x-2 ml-4">
+                <button
+                  onClick={() => abrirDocumento(doc)}
+                  className="text-blue-600 hover:text-blue-800 transition"
+                  title="Ver documento"
+                >
+                  <FaEye size={18} />
+                </button>
+                <button
+                  onClick={() => descargarDocumento(doc)}
+                  className="text-blue-600 hover:text-blue-800 transition"
+                  title="Descargar documento"
+                >
+                  <FaDownload size={18} />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        {/* Paginación */}
+        {totalPaginas > 1 && (
+          <div className="flex justify-center mt-4 gap-2">
+            <button
+              onClick={() => cambiarPagina(paginaActual - 1)}
+              disabled={paginaActual === 1}
+              className="px-3 py-1 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <span className="px-3 py-1 text-sm">
+              Página {paginaActual} de {totalPaginas}
+            </span>
+            <button
+              onClick={() => cambiarPagina(paginaActual + 1)}
+              disabled={paginaActual === totalPaginas}
+              className="px-3 py-1 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+            >
+              Siguiente
+            </button>
           </div>
-        ))}
+        )}
       </div>
     ) : (
       <p className="text-gray-500 dark:text-gray-400 mt-2 text-center">
@@ -1388,7 +1463,9 @@ const descargarDocumento = async (docOrId: Documento | string) => {
           )}
         </motion.div>
       </motion.div>
+      
     </div>
+
   );
 };
 

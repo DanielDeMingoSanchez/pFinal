@@ -955,7 +955,7 @@ const descargarDocumento = async (documento: Documento) => {
         {/* Barra de búsqueda mejorada */}
         <div className="flex justify-center items-center w-full">
           <SearchBar 
-            placeholder="Buscar por título..." 
+            placeholder="Buscar.." 
             onSearch={handleSearch}
             className="w-full max-w-lg md:max-w-xl lg:max-w-2xl"
           />

@@ -31,6 +31,7 @@ import ChatGlobal from './components/ChatGlobal';
 import AdminPanel from './components/admin/AdminPanel';
 import AdminAlert from './components/AdminAlert';
 import BroadcastMessage from './components/BroadcastMessage';
+import Search from './components/Search';
 import './index.css';
 
 // Definir theme
@@ -283,6 +284,18 @@ function App() {
                 <PrivateRoute>
                   <MainLayout>
                     <AdminPanel />
+                  </MainLayout>
+                </PrivateRoute>
+              }
+            />
+            
+            {/* Ruta de búsqueda global */}
+            <Route
+              path="/search"
+              element={
+                <PrivateRoute>
+                  <MainLayout>
+                    <Search />
                   </MainLayout>
                 </PrivateRoute>
               }

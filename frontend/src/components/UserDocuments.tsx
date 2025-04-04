@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
-import { deleteObject, ref } from 'firebase/storage';
-import { db, storage } from '../firebase/config';
-import { auth } from '../firebase/config';
+import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, increment } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
+import { auth, db, storage } from '../firebase/config';
 import { FaTrash, FaEye, FaDownload } from 'react-icons/fa';
-import { toast } from 'react-hot-toast';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Grid, Typography, Button, Box } from '@mui/material';
+import toast from 'react-hot-toast';
+import { Grid, Typography, Button, Box, CircularProgress } from '@mui/material';
 import DocumentoCard from './ui/DocumentoCard';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Documento {
   id: string;
@@ -110,6 +109,16 @@ const UserDocuments: React.FC = () => {
   const [sortField, setSortField] = useState<string>('fechaCreacion');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const location = useLocation();
+
+  useEffect(() => {
+    // Extraer el término de búsqueda de la URL si existe
+    const searchParams = new URLSearchParams(location.search);
+    const searchFromUrl = searchParams.get('search');
+    if (searchFromUrl) {
+      setSearchTerm(searchFromUrl);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const fetchDocumentos = async () => {
@@ -373,22 +382,11 @@ const UserDocuments: React.FC = () => {
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
             background: 'linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05))'
           }}>
-            Mis Documentos
+            Mis Documentos {searchTerm && `- Resultados para "${searchTerm}"`}
           </h2>
         </div>
 
-        {/* Barra de búsqueda 
-         <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Buscar por título, descripción o categoría..."
-            className="w-full p-3 rounded-lg border border-gray-300 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-blue-300"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        */}
-       
+        {/* La barra de búsqueda se ha movido al Navbar global */}
 
         {loading ? (
           <Box display="flex" justifyContent="center" my={6}>
@@ -410,7 +408,31 @@ const UserDocuments: React.FC = () => {
           </Box>
         ) : (
           <>
-            <Box display="flex" justifyContent="flex-end" mb={3}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              {searchTerm && (
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  onClick={() => {
+                    setSearchTerm('');
+                    // Eliminar el parámetro de búsqueda de la URL sin recargar la página
+                    const searchParams = new URLSearchParams(location.search);
+                    searchParams.delete('search');
+                    window.history.replaceState(
+                      {},
+                      '',
+                      location.pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '')
+                    );
+                  }}
+                  sx={{
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    textTransform: 'none'
+                  }}
+                >
+                  Limpiar búsqueda
+                </Button>
+              )}
               <select
                 value={`${sortField}-${sortDirection}`}
                 onChange={(e) => {
@@ -423,7 +445,8 @@ const UserDocuments: React.FC = () => {
                   fontSize: '0.875rem',
                   padding: '0.5rem 1rem',
                   borderRadius: '0.375rem',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  marginLeft: 'auto'
                 }}
               >
                 <option value="fechaCreacion-desc">Más recientes primero</option>
@@ -442,6 +465,14 @@ const UserDocuments: React.FC = () => {
                 </Grid>
               ))}
             </Grid>
+            
+            {sortedDocuments.length === 0 && searchTerm && (
+              <Box textAlign="center" my={6} p={4} bgcolor="rgba(255,255,255,0.8)" borderRadius={2}>
+                <Typography variant="h6" mt={2} mb={1}>
+                  No se encontraron documentos que coincidan con "{searchTerm}"
+                </Typography>
+              </Box>
+            )}
           </>
         )}
       </div>

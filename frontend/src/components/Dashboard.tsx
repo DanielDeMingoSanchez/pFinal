@@ -38,17 +38,17 @@ import Carousel from './Carousel';
 // Interfaces
 interface Documento {
   id: string;
-  titulo: string;
-  descripcion: string;
-  categoria: string;
+  titulo: string | React.ReactNode;
+  descripcion: string | React.ReactNode;
+  categoria: string | React.ReactNode;
   fechaCreacion: string;
   descargas: number;
   vistas: number;
   destacado: boolean;
   url: string;
-  nombreArchivo?: string;  // <--- Añade este campo si no lo tenías
+  nombreArchivo?: string;
   usuario: {
-    nombre: string;
+    nombre: string | React.ReactNode;
     id: string;
     email: string;
   };
@@ -78,6 +78,99 @@ interface TextAreaChangeEvent extends React.ChangeEvent<HTMLTextAreaElement> {}
 interface SelectChangeEvent extends React.ChangeEvent<HTMLSelectElement> {}
 
 const Dashboard: React.FC = () => {
+  // Definición de la animación CSS keyframe para el efecto de subrayado
+  const highlightAnimation = `
+    @keyframes pulseHighlight {
+      0% { text-decoration-color: white; text-shadow: 0 0 2px rgba(255, 255, 255, 0.5); }
+      50% { text-decoration-color: #3b82f6; text-shadow: 0 0 10px rgba(255, 255, 255, 0.9); }
+      100% { text-decoration-color: white; text-shadow: 0 0 2px rgba(255, 255, 255, 0.5); }
+    }
+    
+    @keyframes underlineSwipe {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+  `;
+
+  // Inyectar estilos al renderizar el componente
+  React.useLayoutEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = highlightAnimation;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
+  // Función para crear el subrayado blanco en texto resaltado
+  const createHighlight = (text: string | React.ReactNode, searchTerm: string, isCategory: boolean = false) => {
+    // Si el texto ya es un ReactNode o no hay término de búsqueda, devolver el texto como está
+    if (React.isValidElement(text) || !searchTerm || !text) {
+      return <span className="text-white">{text}</span>;
+    }
+    
+    if (typeof text !== 'string') {
+      return <span className="text-white">{String(text)}</span>;
+    }
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    
+    // Optimización: si el texto es muy largo y no contiene el término de búsqueda, retornar sin procesar
+    if (text.length > 100 && !text.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return <span className="text-white">{text}</span>;
+    }
+    
+    const parts = text.split(regex);
+    
+    // Color de fondo dependiendo de si es categoría o no
+    const bgColor = isCategory 
+      ? 'rgba(79, 70, 229, 0.6)' // Morado para categorías
+      : 'rgba(59, 130, 246, 0.5)'; // Azul para otros textos
+    
+    return (
+      <>
+        {parts.map((part, i) => 
+          regex.test(part) ? (
+            <span 
+              key={i} 
+              className="text-white relative"
+              style={{
+                textDecoration: 'underline',
+                textDecorationColor: 'white',
+                textDecorationThickness: '3px',
+                textUnderlineOffset: '4px',
+                fontWeight: 'bold',
+                padding: '0 4px',
+                backgroundColor: bgColor,
+                borderRadius: '3px',
+                animation: 'pulseHighlight 2s infinite',
+                position: 'relative',
+                display: 'inline-block',
+                overflow: 'hidden'
+              }}
+            >
+              {part}
+              <div style={{
+                position: 'absolute',
+                bottom: '0',
+                left: '0',
+                width: '100%',
+                height: '3px',
+                backgroundColor: 'white',
+                boxShadow: '0 0 10px 2px rgba(255, 255, 255, 0.8)',
+                transform: 'translateX(-100%)',
+                animation: 'underlineSwipe 1.5s infinite'
+              }}></div>
+            </span>
+          ) : (
+            <span key={i} className="text-white">{part}</span>
+          )
+        )}
+      </>
+    );
+  };
+
   // Estados
   const [documentos, setDocumentos] = useState<Documento[]>([]);
   const [documentosDestacados, setDocumentosDestacados] = useState<Documento[]>([]);
@@ -535,12 +628,14 @@ const Dashboard: React.FC = () => {
       return;
     }
   
-    // 🔍 Filtrar documentos por título o descripción
+    // 🔍 Filtrar documentos por título, descripción o nombre de usuario
     const documentosFiltrados = documentos.filter((doc) => 
-      doc.titulo.toLowerCase().includes(query.toLowerCase()) ||
-      doc.usuario.nombre.toLowerCase().includes(query.toLowerCase())
+      doc.titulo.toString().toLowerCase().includes(query.toLowerCase()) ||
+      doc.descripcion.toString().toLowerCase().includes(query.toLowerCase()) ||
+      doc.usuario.nombre.toString().toLowerCase().includes(query.toLowerCase()) ||
+      doc.categoria.toString().toLowerCase().includes(query.toLowerCase())
     );
-  //
+  
     setResultadosBusqueda(documentosFiltrados);
     setMostrandoResultados(true);
     setPaginaActual(1); // 🔄 Reiniciar paginación
@@ -788,7 +883,7 @@ const metadata = {
   };
 
   const [paginaActual, setPaginaActual] = useState(1);
-  const documentosPorPagina = 5; // Número de documentos a mostrar por página
+  const documentosPorPagina = 10; // Número de documentos a mostrar por página
 
   const indiceInicial = (paginaActual - 1) * documentosPorPagina;
   const documentosPaginados = resultadosBusqueda.slice(indiceInicial, indiceInicial + documentosPorPagina);
@@ -1031,9 +1126,13 @@ const descargarDocumento = async (docOrId: Documento | string) => {
       backgroundColor: 'transparent !important',
       outline: 'none !important',
       margin: '0 !important',
-      padding: '0 !important'
+      padding: '0 !important',
+      paddingTop: '100px !important' // Forzar padding superior
     }}
   >
+      {/* Elemento espaciador solo para móviles */}
+      <div className="sm:hidden" style={{ height: '100px', width: '100%' }}></div>
+      
       {/* Eliminar el botón flotante individual, ya que ahora usamos uno global */}
       
       <motion.div 
@@ -1074,26 +1173,31 @@ const descargarDocumento = async (docOrId: Documento | string) => {
       <div className="space-y-2">
         <ol className="list-decimal list-inside text-sm text-gray-900 dark:text-white">
           {documentosPaginados.map((doc, index) => (
-            <li key={doc.id} className="bg-white/70 dark:bg-gray-800/70 p-3 rounded flex items-center justify-between shadow-sm">
+            <li key={doc.id} className="bg-gray-700/90 dark:bg-gray-800/90 p-3 rounded flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex-1">
-                <span className="font-semibold">Título:</span> {doc.titulo} &nbsp;
-                <span className="font-semibold">Usuario:</span> {doc.usuario.nombre}
-              </div>
-              <div className="flex items-center space-x-2 ml-4">
-                <button
-                  onClick={() => abrirDocumento(doc)}
-                  className="text-blue-600 hover:text-blue-800 transition"
-                  title="Ver documento"
-                >
-                  <FaEye size={18} />
-                </button>
-                <button
-                  onClick={() => descargarDocumento(doc)}
-                  className="text-blue-600 hover:text-blue-800 transition"
-                  title="Descargar documento"
-                >
-                  <FaDownload size={18} />
-                </button>
+                <span className="font-semibold text-white">Título:</span> {createHighlight(doc.titulo, busqueda, false)} &nbsp;&nbsp;
+                <span className="font-semibold text-white">Usuario:</span> {createHighlight(doc.usuario.nombre, busqueda, false)}&nbsp;&nbsp;&nbsp;
+                <div className="mt-1">
+                  <span className="font-semibold text-white">Categoría:</span> {createHighlight(doc.categoria, busqueda, true)}&nbsp;&nbsp;&nbsp;
+                  <span className="font-semibold text-white">Descripción:</span> {createHighlight(doc.descripcion.substring(0, 50) + (doc.descripcion.length > 50 ? '...' : ''), busqueda, false)}
+                </div>
+                <div className="mt-2">
+                  <button
+                    onClick={() => abrirDocumento(doc)}
+                    className="text-white hover:text-blue-200 transition bg-blue-600/60 hover:bg-blue-700/70 px-2 py-1 rounded mr-2"
+                    title="Ver documento"
+                  >
+                    <FaEye color="white" size={16} className="inline mr-1" /> Ver
+                  </button>
+                  <button
+                    onClick={() => descargarDocumento(doc)}
+                    className="text-white hover:text-blue-200 transition bg-blue-600/60 hover:bg-blue-700/70 px-2 py-1 rounded"
+                    title="Descargar documento"
+                  >
+                    <FaDownload color="white" size={16} className="inline mr-1" /> Descargar
+                  </button>
+                  <p></p>
+                </div>
               </div>
             </li>
           ))}
@@ -1105,17 +1209,25 @@ const descargarDocumento = async (docOrId: Documento | string) => {
             <button
               onClick={() => cambiarPagina(paginaActual - 1)}
               disabled={paginaActual === 1}
-              className="px-3 py-1 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+              className="px-3 py-1 text-sm rounded bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all"
+              style={{
+                boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
+              }}
             >
               Anterior
             </button>
-            <span className="px-3 py-1 text-sm">
+            <span className="px-3 py-1 text-sm font-medium text-white">
               Página {paginaActual} de {totalPaginas}
             </span>
             <button
               onClick={() => cambiarPagina(paginaActual + 1)}
               disabled={paginaActual === totalPaginas}
-              className="px-3 py-1 text-sm rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+              className="px-3 py-1 text-sm rounded bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all"
+              style={{
+                boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
+              }}
             >
               Siguiente
             </button>
@@ -1123,7 +1235,14 @@ const descargarDocumento = async (docOrId: Documento | string) => {
         )}
       </div>
     ) : (
-      <p className="text-gray-500 dark:text-gray-400 mt-2 text-center">
+      <p className="text-white font-medium mt-2 text-center" style={{
+        textShadow: '0 0 5px rgba(59, 130, 246, 0.7)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        borderRadius: '5px',
+        padding: '1rem',
+        backgroundColor: 'rgba(30, 58, 138, 0.3)',
+        boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)'
+      }}>
         No se encontraron resultados.
       </p>
     )}
@@ -1138,11 +1257,15 @@ const descargarDocumento = async (docOrId: Documento | string) => {
           animate="visible"
         >
           {/* Botón de subir documento centrado - Separado de las categorías */}
-          <div className="flex justify-center w-full mb-12">
+          <div className="container mx-auto px-4 py-6"
+            style={{ marginTop: '-140px' }} // Forzar margen superior fijo
+          >
+
             {!mostrarFormulario ? (
               <motion.button
                 onClick={() => setMostrarFormulario(true)}
                 className="mx-auto bg-blue-600 text-white rounded-lg px-5 py-2.5 shadow-sm hover:bg-blue-700 transition-colors flex items-center justify-center active:bg-blue-800"
+                style={{ marginTop: '110px' }} // Margen adicional directo
                 whileHover={{
                   scale: 1.02,
                   boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
@@ -1332,7 +1455,11 @@ const descargarDocumento = async (docOrId: Documento | string) => {
                     >
                       <Icon size={28} color={categoria.color} />
                     </motion.div>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white line-clamp-1">{categoria.nombre}</h3>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white line-clamp-1">
+                      {busqueda && categoria.nombre.toString().toLowerCase().includes(busqueda.toString().toLowerCase()) 
+                        ? createHighlight(categoria.nombre, busqueda, true) 
+                        : categoria.nombre}
+                    </h3>
                     <motion.p 
                       className="text-sm font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 mt-2 px-3 py-1 rounded-full"
                       whileHover={{ scale: 1.05 }}
@@ -1434,19 +1561,25 @@ const descargarDocumento = async (docOrId: Documento | string) => {
                     key: uuidv4(),
                     content: (
                       <Card 
-                        documento={doc} 
+                        documento={{
+                          ...doc,
+                          titulo: busqueda ? createHighlight(doc.titulo, busqueda, false) : doc.titulo,
+                          descripcion: busqueda ? createHighlight(doc.descripcion, busqueda, false) : doc.descripcion,
+                          categoria: busqueda ? createHighlight(doc.categoria, busqueda, true) : doc.categoria,
+                          usuario: {
+                            ...doc.usuario,
+                            nombre: busqueda ? createHighlight(doc.usuario.nombre, busqueda, false) : doc.usuario.nombre
+                          }
+                        }}
                         onVerClick={() => abrirDocumento(doc)} 
                         onDescargarClick={() => descargarDocumento(doc)}
-                        
                       />
                     )
-                    
                   }))}
                   height="400px"
                   width="100%"
                   margin="0 auto"
                   offset={2}
-                  
                   showArrows={true}
                 />
                

@@ -130,6 +130,7 @@ const Navbar: React.FC<NavbarProps> = ({ showLogout = true }) => {
         boxShadow: '0 1px 10px rgba(0,0,0,0.08)'
       }}
     >
+      
       <Toolbar>
         {isMobile && (
           <IconButton
@@ -260,7 +261,9 @@ const Navbar: React.FC<NavbarProps> = ({ showLogout = true }) => {
         </Stack>
       </Toolbar>
     </AppBar>
+  
   );
+  
 };
 
 

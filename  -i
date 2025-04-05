@@ -1,0 +1,8 @@
+676c88803f255311e1412d83a914d8b1a82ea3e2<|ENT|><|RY|>Adds global search functionality and URL-based search parameters<|COM|><|MIT|>
+c315e9974a2aed35dcf34d5a6fffb4dd39f5bde7<|ENT|><|RY|>Adds new dependencies and refactors document functions<|COM|><|MIT|>
+a5ba5d5feb9e43023bce0179b450a44766fa3706<|ENT|><|RY|>Improves start message transition in StickHero<|COM|><|MIT|>
+5acabad5a9c8c94ceda000e6962557c11f91e3fe<|ENT|><|RY|>Simplifies Dockerfile and enhances StickHero component<|COM|><|MIT|>
+891ad2d46a6b52bab38a82ff440cb20e7daa756a<|ENT|><|RY|>Adds new dependencies and updates Home component<|COM|><|MIT|>
+2b8c925ddba62853ea6ea1d90d1c64358de3f72a<|ENT|><|RY|>Merge branch 'main' of https://github.com/DanielDeMingoSanchez/pFinal<|COM|><|MIT|>
+21934c3a17087bdb4dc83fe667a4129fa39e7ec9<|ENT|><|RY|>Hola Mudo, node modules gitignore<|COM|><|MIT|>
+0fccc5e434e122fd9f3b89caa770678d9d4f862d<|ENT|><|RY|>Initial commit<|COM|><|MIT|>

@@ -173,10 +173,11 @@ const Navbar: React.FC<NavbarProps> = ({ showLogout = true }) => {
         zIndex: (theme) => theme.zIndex.drawer + 1,
         backgroundColor: darkMode ? 'rgba(31, 41, 55, 0.97)' : 'rgba(255, 255, 255, 0.97)',
         backdropFilter: 'blur(10px)',
-        boxShadow: '0 1px 10px rgba(0,0,0,0.08)'
+        boxShadow: '0 1px 10px rgba(0,0,0,0.08)',
+        height: { xs: '70px', sm: '64px' } // Altura específica mayor en móviles
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ minHeight: { xs: '70px', sm: '64px' } }}>
         {isMobile && (
           <IconButton
             color="inherit"

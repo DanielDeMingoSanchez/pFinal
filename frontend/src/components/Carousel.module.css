@@ -132,10 +132,56 @@
 }
 
 /* Reforzar los bordes en elementos react-spring */
-:global(.carousel-container-3d),
-:global(.carousel-container-3d) > div,
 :global([class*="react-spring-3d-carousel"]),
 :global([class*="react-spring-3d-carousel"] *) {
   border: 1px solid rgba(0, 0, 0, 0.15) !important;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Flechas */
+.arrowButton {
+  position: absolute;
+  bottom: calc(-23px);
+  top: auto;
+  transform: none;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #3b82f6;
+  border: 2px solid #93c5fd;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.arrowButton:hover {
+  background-color: #3b82f6;
+  color: white;
+  transform: scale(1.05);
+  border-color: #3b82f6;
+}
+
+.leftArrow {
+  left: calc(50% - 60px);
+}
+
+.rightArrow {
+  right: calc(50% - 60px);
+}
+
+/* Dark mode */
+:global(.dark) .arrowButton {
+  background-color: rgba(31, 41, 55, 0.85);
+  color: #818cf8;
+  border-color: #93c5fd;
+}
+
+:global(.dark) .arrowButton:hover {
+  background-color: #4f46e5;
+  color: white;
+  border-color: #818cf8;
 } 

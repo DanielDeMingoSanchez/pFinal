@@ -115,6 +115,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         sx={{
           flexGrow: 1,
           p: 2,
+          pt: { xs: 15, sm: 12, md: 6 },
           width: { xs: '100%', md: `calc(100% - ${NAV_WIDTH}px)` },
           minHeight: '100vh',
           background: theme => theme.palette.mode === 'dark' ? '#0f172a' : '#f8fafc',

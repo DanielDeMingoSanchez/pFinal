@@ -7,6 +7,8 @@ import './index.css';
 import { Toaster } from 'react-hot-toast';
 // Importar la imagen para asegurar que webpack la procese
 import './resources/masanz.jpg';
+// Importar optimizaciones táctiles
+import './utils/touchOptimizations';
 
 
 // Script para inicializar el tema

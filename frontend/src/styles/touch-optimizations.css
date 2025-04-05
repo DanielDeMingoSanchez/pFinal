@@ -1,0 +1,96 @@
+/* Optimizaciones táctiles para desplazamiento móvil */
+@media (max-width: 1075px) {
+  /* Optimizaciones para desplazamiento suave en carruseles y contenedores horizontales */
+  .carousel-container,
+  .carousel-cards,
+  .mobile-carousel,
+  .mobile-carousel-inner,
+  [class*="slider"],
+  [class*="swiper"],
+  [class*="scroll-container"],
+  div[style*="overflow-x: auto"],
+  div[style*="overflow-x:auto"] {
+    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
+    scrollbar-width: none !important; /* Firefox */
+    touch-action: pan-x !important;
+    cursor: grab !important;
+  }
+  
+  /* Ocultar scrollbar en estos elementos */
+  .carousel-container::-webkit-scrollbar,
+  .carousel-cards::-webkit-scrollbar,
+  .mobile-carousel::-webkit-scrollbar,
+  .mobile-carousel-inner::-webkit-scrollbar,
+  [class*="slider"]::-webkit-scrollbar,
+  [class*="swiper"]::-webkit-scrollbar,
+  [class*="scroll-container"]::-webkit-scrollbar,
+  div[style*="overflow-x: auto"]::-webkit-scrollbar,
+  div[style*="overflow-x:auto"]::-webkit-scrollbar {
+    display: none !important;
+  }
+  
+  /* Efecto visual cuando se está arrastrando */
+  .carousel-container:active,
+  .carousel-cards:active,
+  .mobile-carousel:active,
+  .mobile-carousel-inner:active,
+  [class*="slider"]:active,
+  [class*="swiper"]:active,
+  [class*="scroll-container"]:active,
+  div[style*="overflow-x: auto"]:active,
+  div[style*="overflow-x:auto"]:active {
+    cursor: grabbing !important;
+  }
+  
+  /* Habilitar snap points en elementos de carrusel */
+  .carousel-card,
+  .mobile-card,
+  [class*="slider-item"],
+  [class*="swiper-slide"],
+  [class*="carousel-item"] {
+    scroll-snap-align: center !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Optimizaciones para todos los elementos scrollables verticales */
+  .MuiContainer-root,
+  .MuiBox-root,
+  div[style*="overflow-y"],
+  main, section, div, nav, aside {
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    overscroll-behavior-y: contain !important;
+  }
+  
+  /* Mejorar experiencia táctil en la aplicación completa */
+  input, 
+  button, 
+  a, 
+  .MuiButtonBase-root {
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+  }
+  
+  /* Asegurar que los botones tienen suficiente tamaño para tocar en móvil */
+  button,
+  .MuiButton-root,
+  .MuiIconButton-root,
+  a[role="button"],
+  .btn-ver,
+  .btn-descargar,
+  .btn-borrar {
+    min-height: 44px !important; /* Mínimo recomendado para áreas táctiles */
+    min-width: 44px !important;
+  }
+  
+  /* Eliminar efectos de rebote en iOS */
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+} 

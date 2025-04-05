@@ -24,16 +24,15 @@ import {
 } from 'react-icons/fa';
 import { MdSchool, MdCategory } from 'react-icons/md';
 import toast from 'react-hot-toast';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import IconWrapper from './ui/IconWrapper';
-import SearchBar from './ui/SearchBar';
-import StatCard from './ui/StatCard';
-import { useNavigate, useLocation } from 'react-router-dom';
-import FloatingBackButton from './ui/FloatingBackButton';
 import { Box, Typography } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import Card from './Card';
 import Carousel from './Carousel';
+import { useNavigate, useLocation } from 'react-router-dom';
+import FloatingBackButton from './ui/FloatingBackButton';
+import IconWrapper from './ui/IconWrapper';
+import SearchBar from './ui/SearchBar';
+import StatCard from './ui/StatCard';
 
 // Interfaces
 interface Documento {
@@ -110,18 +109,21 @@ const Dashboard: React.FC = () => {
       return <span className="text-white">{text}</span>;
     }
     
-    if (typeof text !== 'string') {
+    // Asegurarse de que el texto sea un string
+    const stringText = String(text);
+    
+    if (typeof stringText !== 'string') {
       return <span className="text-white">{String(text)}</span>;
     }
     
     const regex = new RegExp(`(${searchTerm})`, 'gi');
     
     // Optimización: si el texto es muy largo y no contiene el término de búsqueda, retornar sin procesar
-    if (text.length > 100 && !text.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return <span className="text-white">{text}</span>;
+    if (stringText.length > 100 && !stringText.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return <span className="text-white">{stringText}</span>;
     }
     
-    const parts = text.split(regex);
+    const parts = stringText.split(regex);
     
     // Color de fondo dependiendo de si es categoría o no
     const bgColor = isCategory 
@@ -227,8 +229,20 @@ const Dashboard: React.FC = () => {
     } else {
       // Si no hay término de búsqueda, mostrar todos los documentos
       setMostrandoResultados(false);
+      setResultadosBusqueda(documentos); // Aseguramos que los resultados contengan todos los documentos
     }
   }, [location.search, documentos.length]);
+
+  // Efecto para actualizar resultados de búsqueda cuando cambian los documentos
+  useEffect(() => {
+    // Si no hay búsqueda activa, mantener resultados sincronizados con documentos
+    if (!busqueda) {
+      setResultadosBusqueda(documentos);
+    } else if (busqueda && documentos.length > 0) {
+      // Si hay búsqueda, reaplica el filtro con los documentos actualizados
+      handleSearch(busqueda);
+    }
+  }, [documentos]);
 
   // Efecto para escuchar el evento personalizado de búsqueda en tiempo real desde el Navbar
   useEffect(() => {
@@ -281,19 +295,6 @@ const Dashboard: React.FC = () => {
       color: '#4f46e5',
       bgColor: '#e0e7ff'
     }
-  ];
-
-  // Datos para gráficos
-  const pieChartData = categorias.map(cat => ({
-    name: cat.nombre,
-    value: cat.documentos || 1, // Valor mínimo de 1 para visualización
-    color: cat.color
-  }));
-
-  const barChartData = [
-    { name: 'Documentos', value: estadisticas.totalDocumentos, color: '#3b82f6' },
-    { name: 'Descargas', value: estadisticas.totalDescargas, color: '#10b981' },
-    { name: 'Vistas', value: estadisticas.totalVistas, color: '#7c3aed' }
   ];
 
   // Añadir estados para los filtros
@@ -384,8 +385,8 @@ const Dashboard: React.FC = () => {
       // Actualizar conteo de documentos por categoría
       const conteoCategoria: Record<string, number> = {};
       docsData.forEach(doc => {
-        const categoria = doc.categoria;
-        conteoCategoria[categoria] = (conteoCategoria[categoria] || 0) + 1;
+        const categoriaId = String(doc.categoria || 'otros');
+        conteoCategoria[categoriaId] = (conteoCategoria[categoriaId] || 0) + 1;
       });
       
       // Actualizar el conteo en las categorías
@@ -563,8 +564,8 @@ const Dashboard: React.FC = () => {
       // Actualizar conteo de documentos por categoría
       const conteoCategoria: Record<string, number> = {};
       docsData.forEach(doc => {
-        const categoria = doc.categoria;
-        conteoCategoria[categoria] = (conteoCategoria[categoria] || 0) + 1;
+        const categoriaId = String(doc.categoria || 'otros');
+        conteoCategoria[categoriaId] = (conteoCategoria[categoriaId] || 0) + 1;
       });
       
       // Actualizar el conteo en las categorías
@@ -623,22 +624,31 @@ const Dashboard: React.FC = () => {
 
   const handleSearch = (query: string) => {
     if (!query.trim()) {
-      setResultadosBusqueda(documentos); // 🔥 Si no hay búsqueda, mostrar todos
+      setResultadosBusqueda(documentos); // Si no hay búsqueda, mostrar todos
       setMostrandoResultados(false);
       return;
     }
   
-    // 🔍 Filtrar documentos por título, descripción o nombre de usuario
-    const documentosFiltrados = documentos.filter((doc) => 
-      doc.titulo.toString().toLowerCase().includes(query.toLowerCase()) ||
-      doc.descripcion.toString().toLowerCase().includes(query.toLowerCase()) ||
-      doc.usuario.nombre.toString().toLowerCase().includes(query.toLowerCase()) ||
-      doc.categoria.toString().toLowerCase().includes(query.toLowerCase())
-    );
+    // Filtrar documentos por título, descripción o nombre de usuario
+    const documentosFiltrados = documentos.filter((doc) => {
+      // Convertir a string de forma segura todos los campos
+      const titulo = String(doc.titulo || '');
+      const descripcion = String(doc.descripcion || '');
+      const nombreUsuario = String(doc.usuario?.nombre || '');
+      const categoria = String(doc.categoria || '');
+      
+      const queryLower = query.toLowerCase();
+      
+      return titulo.toLowerCase().includes(queryLower) ||
+             descripcion.toLowerCase().includes(queryLower) ||
+             nombreUsuario.toLowerCase().includes(queryLower) ||
+             categoria.toLowerCase().includes(queryLower);
+    });
   
+    console.log(`Búsqueda: "${query}" - Resultados: ${documentosFiltrados.length} documentos`);
     setResultadosBusqueda(documentosFiltrados);
     setMostrandoResultados(true);
-    setPaginaActual(1); // 🔄 Reiniciar paginación
+    setPaginaActual(1); // Reiniciar paginación
   };
 
   const navigate = useNavigate();
@@ -1012,7 +1022,9 @@ const descargarDocumento = async (docOrId: Documento | string) => {
       extension = documento.nombreArchivo.split('.').pop() || 'bin';
     }
 
-    const nombreBase = documento.titulo.replace(/[\/\\:*?"<>|]/g, '_').substring(0, 50);
+    // Asegurar que el título sea una cadena y procesarla para el nombre del archivo
+    const tituloString = String(documento.titulo || 'documento');
+    const nombreBase = tituloString.replace(/[\/\\:*?"<>|]/g, '_').substring(0, 50);
     const nombreFinal = `${nombreBase || 'documento'}.${extension || 'bin'}`;
 
     const urlBlob = window.URL.createObjectURL(blob);
@@ -1162,7 +1174,7 @@ const descargarDocumento = async (docOrId: Documento | string) => {
         )}
 
         {/* Resultados de búsqueda */}
-{mostrandoResultados && (
+{mostrandoResultados ? (
   <motion.div 
     initial={{ opacity: 0, y: -10 }} 
     animate={{ opacity: 1, y: 0 }} 
@@ -1179,7 +1191,7 @@ const descargarDocumento = async (docOrId: Documento | string) => {
                 <span className="font-semibold text-white">Usuario:</span> {createHighlight(doc.usuario.nombre, busqueda, false)}&nbsp;&nbsp;&nbsp;
                 <div className="mt-1">
                   <span className="font-semibold text-white">Categoría:</span> {createHighlight(doc.categoria, busqueda, true)}&nbsp;&nbsp;&nbsp;
-                  <span className="font-semibold text-white">Descripción:</span> {createHighlight(doc.descripcion.substring(0, 50) + (doc.descripcion.length > 50 ? '...' : ''), busqueda, false)}
+                  <span className="font-semibold text-white">Descripción:</span> {createHighlight(String(doc.descripcion || '').substring(0, 50) + (String(doc.descripcion || '').length > 50 ? '...' : ''), busqueda, false)}
                 </div>
                 <div className="mt-2">
                   <button
@@ -1243,10 +1255,15 @@ const descargarDocumento = async (docOrId: Documento | string) => {
         backgroundColor: 'rgba(30, 58, 138, 0.3)',
         boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)'
       }}>
-        No se encontraron resultados.
+        No se encontraron resultados para "{busqueda}".
       </p>
     )}
   </motion.div>
+) : (
+  // Cuando no hay búsqueda activa, mostrar el contenido normal
+  <>
+    {/* El resto del contenido del Dashboard se mostrará aquí */}
+  </>
 )}
 
         {/* Categorías mejoradas */}
@@ -1258,7 +1275,7 @@ const descargarDocumento = async (docOrId: Documento | string) => {
         >
           {/* Botón de subir documento centrado - Separado de las categorías */}
           <div className="container mx-auto px-4 py-6"
-            style={{ marginTop: '-140px' }} // Forzar margen superior fijo
+            style={{ marginTop: '-90px' }} // Forzar margen superior fijo
           >
 
             {!mostrarFormulario ? (
@@ -1473,63 +1490,6 @@ const descargarDocumento = async (docOrId: Documento | string) => {
           </div>
         </motion.div>
 
-        {/* Estadísticas con gráficos */}
-        <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12"
-          variants={containerVariants}
-        >
-          {/* Gráfico de barras */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
-          >
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" />
-                  <Tooltip />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                    {barChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          {/* Gráfico circular */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm"
-          >
-            
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          
-          </motion.div>
-        </motion.div>
-
         {/* Documentos recientes - Carrusel infinito perfecto */}
         <motion.div 
           className="mb-12"
@@ -1563,12 +1523,12 @@ const descargarDocumento = async (docOrId: Documento | string) => {
                       <Card 
                         documento={{
                           ...doc,
-                          titulo: busqueda ? createHighlight(doc.titulo, busqueda, false) : doc.titulo,
-                          descripcion: busqueda ? createHighlight(doc.descripcion, busqueda, false) : doc.descripcion,
-                          categoria: busqueda ? createHighlight(doc.categoria, busqueda, true) : doc.categoria,
+                          titulo: busqueda ? createHighlight(String(doc.titulo || ''), busqueda, false) : String(doc.titulo || ''),
+                          descripcion: busqueda ? createHighlight(String(doc.descripcion || ''), busqueda, false) : String(doc.descripcion || ''),
+                          categoria: busqueda ? createHighlight(String(doc.categoria || ''), busqueda, true) : String(doc.categoria || ''),
                           usuario: {
                             ...doc.usuario,
-                            nombre: busqueda ? createHighlight(doc.usuario.nombre, busqueda, false) : doc.usuario.nombre
+                            nombre: busqueda ? createHighlight(String(doc.usuario.nombre || ''), busqueda, false) : String(doc.usuario.nombre || '')
                           }
                         }}
                         onVerClick={() => abrirDocumento(doc)} 
@@ -1576,7 +1536,7 @@ const descargarDocumento = async (docOrId: Documento | string) => {
                       />
                     )
                   }))}
-                  height="400px"
+                  height="500px"
                   width="100%"
                   margin="0 auto"
                   offset={2}

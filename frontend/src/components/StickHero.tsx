@@ -1,6 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import './StickHero.scss';
 
+// Extender la interfaz de Array para incluir el método last()
+declare global {
+  interface Array<T> {
+    last(): T;
+  }
+  
+  interface Math {
+    sinus(degree: number): number;
+  }
+}
+
 const StickHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameInitialized = useRef<boolean>(false);
@@ -13,6 +24,14 @@ const StickHero: React.FC = () => {
     // La función principal del juego
     const initGame = () => {
       if (gameInitialized.current) return;
+      
+      // Obtener el canvas
+      const canvas = document.getElementById("game") as HTMLCanvasElement;
+      if (!canvas) {
+        console.error("No se pudo encontrar el elemento canvas");
+        return;
+      }
+      
       gameInitialized.current = true;
       
       // Ocultar el mensaje de inicio
@@ -21,8 +40,14 @@ const StickHero: React.FC = () => {
         startMessageRef.current.style.visibility = "hidden";
       }
 
+      // Ocultar el indicador táctil si existe
+      const touchIndicator = document.querySelector('.touch-indicator');
+      if (touchIndicator && touchIndicator.parentNode) {
+        (touchIndicator.parentNode as HTMLElement).removeChild(touchIndicator);
+      }
+
       // Extend the base functionality of JavaScript
-      Array.prototype.last = function () {
+      Array.prototype.last = function<T>() {
         return this[this.length - 1];
       };
 
@@ -71,9 +96,6 @@ const StickHero: React.FC = () => {
 
       const heroWidth = 17; // 24
       const heroHeight = 30; // 40
-
-      const canvas = document.getElementById("game") as HTMLCanvasElement;
-      if (!canvas) return;
       
       // Ajustar el canvas al contenedor pero manteniendo la proporción
       const containerWidth = canvas.parentElement?.clientWidth || window.innerWidth;
@@ -102,10 +124,10 @@ const StickHero: React.FC = () => {
         sceneOffset = 0;
         score = 0;
 
-        introductionElement.style.opacity = "1";
-        perfectElement.style.opacity = "0";
-        restartButton.style.display = "none";
-        scoreElement.innerText = score.toString();
+        if (introductionElement) introductionElement.style.opacity = "1";
+        if (perfectElement) perfectElement.style.opacity = "0";
+        if (restartButton) restartButton.style.display = "none";
+        if (scoreElement) scoreElement.innerText = score.toString();
 
         // The first platform is always the same
         // x + w has to match paddingX
@@ -187,6 +209,8 @@ const StickHero: React.FC = () => {
 
       function handleMouseDown(event: MouseEvent) {
         // Verificar si el clic fue dentro del contenedor del juego
+        if (!container) return;
+        
         const rect = container.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -219,10 +243,43 @@ const StickHero: React.FC = () => {
         draw();
       }
 
+      function handleTouchStart(event: TouchEvent) {
+        event.preventDefault(); // Prevenir comportamientos por defecto como el scroll
+        
+        // Verificar si el toque fue dentro del canvas del juego
+        const canvasRect = canvas.getBoundingClientRect();
+        const touch = event.touches[0];
+        const x = touch.clientX - canvasRect.left;
+        const y = touch.clientY - canvasRect.top;
+        
+        // Si el toque no fue dentro del canvas, no hacer nada
+        if (x < 0 || x > canvasRect.width || y < 0 || y > canvasRect.height) {
+          return;
+        }
+        
+        if (phase === "waiting") {
+          lastTimestamp = undefined;
+          if (introductionElement) introductionElement.style.opacity = "0";
+          phase = "stretching";
+          window.requestAnimationFrame(animate);
+        }
+      }
+
+      function handleTouchEnd(event: TouchEvent) {
+        event.preventDefault(); // Prevenir comportamientos por defecto
+        if (phase === "stretching") {
+          phase = "turning";
+        }
+      }
+
       window.addEventListener("keydown", handleKeyDown);
       window.addEventListener("mousedown", handleMouseDown);
       window.addEventListener("mouseup", handleMouseUp);
       window.addEventListener("resize", handleResize);
+      
+      // Añadir los eventos de toque solamente al canvas
+      canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+      canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
       
       // The main game loop
       function animate(timestamp: number) {
@@ -249,11 +306,19 @@ const StickHero: React.FC = () => {
               if (nextPlatform) {
                 // Increase score
                 score += perfectHit ? 2 : 1;
-                scoreElement.innerText = score.toString();
+                if (scoreElement) {
+                  scoreElement.innerText = score.toString();
+                }
 
                 if (perfectHit) {
-                  perfectElement.style.opacity = "1";
-                  setTimeout(() => (perfectElement.style.opacity = "0"), 1000);
+                  if (perfectElement) {
+                    perfectElement.style.opacity = "1";
+                    setTimeout(() => {
+                      if (perfectElement) {
+                        perfectElement.style.opacity = "0";
+                      }
+                    }, 1000);
+                  }
                 }
 
                 generatePlatform();
@@ -309,7 +374,9 @@ const StickHero: React.FC = () => {
             const maxHeroY =
               platformHeight + 100 + (canvas.height - canvasHeight) / 2;
             if (heroY > maxHeroY) {
-              restartButton.style.display = "block";
+              if (restartButton) {
+                restartButton.style.display = "block";
+              }
               return;
             }
             break;
@@ -350,10 +417,23 @@ const StickHero: React.FC = () => {
       function handleRestartClick(event: Event) {
         event.preventDefault();
         resetGame();
-        restartButton.style.display = "none";
+        if (restartButton) {
+          restartButton.style.display = "none";
+        }
       }
 
-      restartButton.addEventListener("click", handleRestartClick);
+      function handleRestartTouch(event: TouchEvent) {
+        event.preventDefault();
+        resetGame();
+        if (restartButton) {
+          restartButton.style.display = "none";
+        }
+      }
+
+      if (restartButton) {
+        restartButton.addEventListener("click", handleRestartClick);
+        restartButton.addEventListener("touchend", handleRestartTouch, { passive: false });
+      }
 
       function draw() {
         if (!ctx) return;
@@ -582,28 +662,89 @@ const StickHero: React.FC = () => {
         window.removeEventListener("keydown", handleKeyDown);
         window.removeEventListener("mousedown", handleMouseDown);
         window.removeEventListener("mouseup", handleMouseUp);
+        canvas.removeEventListener("touchstart", handleTouchStart);
+        canvas.removeEventListener("touchend", handleTouchEnd);
         window.removeEventListener("resize", handleResize);
-        restartButton.removeEventListener("click", handleRestartClick);
+        if (restartButton) {
+          restartButton.removeEventListener("click", handleRestartClick);
+          restartButton.removeEventListener("touchend", handleRestartTouch);
+        }
         gameInitialized.current = false;
       };
     };
 
-    // Añadir el evento de clic solo al contenedor
+    // Añadir evento de clic y toque al contenedor
     const handleContainerClick = () => {
       initGame();
     };
 
+    const handleContainerTouch = (event: TouchEvent) => {
+      event.preventDefault(); // Prevenir comportamientos por defecto
+      
+      // Solo iniciar el juego si el toque es en el contenedor
+      const rect = container.getBoundingClientRect();
+      const touch = event.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      
+      if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+        initGame();
+      }
+    };
+
     container.addEventListener('click', handleContainerClick);
+    container.addEventListener('touchstart', handleContainerTouch, { passive: false });
 
     // Mostrar un mensaje para que el usuario sepa que debe hacer clic para iniciar
     const introElement = document.createElement('div');
     introElement.className = 'game-start-message';
-    introElement.textContent = 'Haz clic para iniciar el juego';
+    introElement.textContent = 'Toca dentro del área del juego para comenzar';
     startMessageRef.current = introElement;
     container.appendChild(introElement);
+    
+    // Para dispositivos móviles, añadir una indicación adicional
+    if ('ontouchstart' in window) {
+      const touchIndicator = document.createElement('div');
+      touchIndicator.className = 'touch-indicator';
+      touchIndicator.textContent = '👆 Toca AQUÍ 👆';
+      container.appendChild(touchIndicator);
+      
+      // Eliminar el indicador cuando se inicie el juego
+      const removeIndicator = () => {
+        if (touchIndicator.parentNode === container) {
+          container.removeChild(touchIndicator);
+        }
+        const gameCanvas = document.getElementById("game") as HTMLCanvasElement;
+        if (gameCanvas) {
+          gameCanvas.removeEventListener('touchstart', removeIndicator);
+        }
+      };
+      
+      const gameCanvas = document.getElementById("game") as HTMLCanvasElement;
+      if (gameCanvas) {
+        gameCanvas.addEventListener('touchstart', removeIndicator, { passive: true });
+      }
+      
+      return () => {
+        container.removeEventListener('click', handleContainerClick);
+        container.removeEventListener('touchstart', handleContainerTouch);
+        if (introElement.parentNode === container) {
+          container.removeChild(introElement);
+        }
+        if (touchIndicator.parentNode === container) {
+          container.removeChild(touchIndicator);
+        }
+        const gameCanvas = document.getElementById("game") as HTMLCanvasElement;
+        if (gameCanvas) {
+          gameCanvas.removeEventListener('touchstart', removeIndicator);
+        }
+        startMessageRef.current = null;
+      };
+    }
 
     return () => {
       container.removeEventListener('click', handleContainerClick);
+      container.removeEventListener('touchstart', handleContainerTouch);
       if (introElement.parentNode === container) {
         container.removeChild(introElement);
       }

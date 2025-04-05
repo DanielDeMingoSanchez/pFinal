@@ -6,11 +6,17 @@ import Button from './Button';
 interface CardProps {
   documento: {
     id: string;
-    titulo: string;
-    descripcion: string;
+    titulo: string | React.ReactNode;
+    descripcion: string | React.ReactNode;
     fechaCreacion: string;
     vistas: number;
     descargas: number;
+    categoria?: string | React.ReactNode;
+    usuario?: {
+      nombre: string | React.ReactNode;
+      id: string;
+      email: string;
+    };
   };
   onVerClick?: (id: string) => void;
   onDescargarClick?: (id: string) => void;
@@ -41,9 +47,18 @@ const Card: React.FC<CardProps> = ({ documento, onVerClick, onDescargarClick }) 
   };
 
   // Limitar texto
-  const limitarTexto = (texto: string, limite: number) => {
-    if (texto.length <= limite) return texto;
-    return texto.substring(0, limite) + '...';
+  const limitarTexto = (texto: string | React.ReactNode, limite: number) => {
+    // Si es un ReactNode, devolver sin modificar
+    if (React.isValidElement(texto)) {
+      return texto;
+    }
+    
+    // Convertir a string de forma segura
+    const textoString = String(texto || '');
+    
+    // Si es string, aplicar el límite
+    if (textoString.length <= limite) return textoString;
+    return textoString.substring(0, limite) + '...';
   };
 
   return (
@@ -61,8 +76,12 @@ const Card: React.FC<CardProps> = ({ documento, onVerClick, onDescargarClick }) 
           </svg>
         </div>
       </div>
-      <h2 title={documento.titulo}>{limitarTexto(documento.titulo, 30)}</h2>
-      <p title={documento.descripcion}>{limitarTexto(documento.descripcion, 80)}</p>
+      <h2 title={typeof documento.titulo === 'string' ? documento.titulo : 'Documento'}>
+        {limitarTexto(documento.titulo, 30)}
+      </h2>
+      <p title={typeof documento.descripcion === 'string' ? documento.descripcion : 'Sin descripción'}>
+        {limitarTexto(documento.descripcion, 80)}
+      </p>
       <div className={styles.stats}>
         <span title="Fecha" className={styles.date}>
           {formatearFecha(documento.fechaCreacion)}

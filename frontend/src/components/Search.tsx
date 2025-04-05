@@ -374,7 +374,9 @@ const Search: React.FC = () => {
                   >
                     <BiSearch size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
                     <Typography variant="h6">
-                      No se encontraron documentos que coincidan con "{searchTerm}"
+                     
+                      No se encontraron documentos que coincidan con "{searchTerm} "
+                     
                       {selectedCategories.length > 0 && " y los filtros seleccionados"}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
